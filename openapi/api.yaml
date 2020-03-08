@@ -1,0 +1,53 @@
+swagger: '2.0'
+info:
+  title: Pet Shop Example API
+  version: "1.0.0"
+  description: Simple example API to store and retrieve pets
+  x-audience: external-public
+  x-api-id: d2b9be12-eb8b-4d16-83a9-178c8144aedf
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /users/{user_id}:
+    get:
+      tags: [user]
+      operationId: application.funcs.get_user
+      summary: Get User
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+    delete:
+      tags: [user]
+      operationId: application.funcs.delete_user
+      summary: Remove a user
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        204:
+          description: User was deleted
+        404:
+          description: User does not exist
