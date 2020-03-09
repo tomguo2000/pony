@@ -12,7 +12,7 @@ https://medium.com/@shandou/pipenv-install-mysqlclient-on-macosx-7c253b0112f2
 Git:
 1. (any):git checkout master (switch to master)
 2. (master):git pull (update from github)
-3. (master):git checkout xxx (switch to your own branch)
+3. (master):git checkout -b xxx (switch to your own branch)
 4. (xxx):git merge master (update your own branch from master)
 	loop:
 		do some dev on your own branch
