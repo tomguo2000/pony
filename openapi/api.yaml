@@ -51,3 +51,48 @@ paths:
           description: User was deleted
         404:
           description: User does not exist
+  /users:
+    put:
+      tags: [user]
+      summary: Modify a user
+      operationId: application.funcs.modify_user
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/Users'
+      responses:
+        200:
+          description: success
+    post:
+      tags: [user]
+      summary: Add a user
+      operationId: application.funcs.add_user
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/Users'
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: success
+
+definitions:
+  Users:
+    type: object
+    required:
+    - email
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string

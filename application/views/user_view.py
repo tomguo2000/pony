@@ -1,5 +1,6 @@
 from .base_view import BaseView
 from application.services.user_service import UserService
+from application.common.foundation import db
 
 """
 each class is for one API
@@ -31,3 +32,35 @@ class DeleteUserView(BaseView):
 
     def process(self):
         return "success"
+
+class ModifyUserView(BaseView):
+
+    def process(self):
+        user_body = self.parameters.get('body')
+
+        if UserService.get_user_by_email(user_body.get('email')):
+            #body里传入email和任意字段，怎么写任意字段的修改
+            UserService.modify_user(user_body.get('name'),user_body.get('email'))
+            db.session.commit()
+            return "modify user success"
+        else:
+            return "user not exist"
+
+
+class AddUserView(BaseView):
+
+    def process(self):
+        user_body = self.parameters.get('body')
+
+        if self.check_registed_user_by_email(user_body.get('email')):
+            return 'This email already registed'
+
+        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'))
+        db.session.commit()
+        return {
+            'result':'success'
+        }
+
+    def check_registed_user_by_email(self,user_email):
+        if UserService.get_user_by_email(user_email):
+            return True
