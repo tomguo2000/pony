@@ -27,3 +27,9 @@ class UserService(BaseService):
     def modify_user(user_name,user_email):
         update = UserModel.query.filter(UserModel.email == user_email).first()
         update.name = user_name
+
+    @staticmethod
+    def modify_user_by_id(user_id,update_data):
+        update = UserModel.query.filter(UserModel.id == user_id).first()
+        for key in update_data:
+            setattr(update,key,update_data[key])

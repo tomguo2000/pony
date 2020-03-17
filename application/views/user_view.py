@@ -33,19 +33,29 @@ class DeleteUserView(BaseView):
     def process(self):
         return "success"
 
+class ModifyUserViewByID(BaseView):
+
+    def process(self):
+        user_body = self.parameters.get('body')
+        user_id = self.parameters.get('user_id')
+        if UserService.get_user(user_id):
+            UserService.modify_user_by_id(user_id,user_body)
+            db.session.commit()
+            return "modify user success"
+        else:
+            return "user not exist",400
+
 class ModifyUserView(BaseView):
 
     def process(self):
         user_body = self.parameters.get('body')
-
         if UserService.get_user_by_email(user_body.get('email')):
             #body里传入email和任意字段，怎么写任意字段的修改
             UserService.modify_user(user_body.get('name'),user_body.get('email'))
             db.session.commit()
             return "modify user success"
         else:
-            return "user not exist"
-
+            return "user not exist",400
 
 class AddUserView(BaseView):
 
@@ -53,12 +63,12 @@ class AddUserView(BaseView):
         user_body = self.parameters.get('body')
 
         if self.check_registed_user_by_email(user_body.get('email')):
-            return 'This email already registed'
+            return "This email already registed",400
 
         UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'))
         db.session.commit()
         return {
-            'result':'success'
+            'result':"success"
         }
 
     def check_registed_user_by_email(self,user_email):

@@ -13,6 +13,10 @@ def modify_user(body):
     from application.views.user_view import ModifyUserView
     return ModifyUserView(locals()).as_view()
 
+def modify_user_by_id(user_id,body):
+    from application.views.user_view import ModifyUserViewByID
+    return ModifyUserViewByID(locals()).as_view()
+
 def add_user(body):
     from application.views.user_view import AddUserView
     return AddUserView(locals()).as_view()

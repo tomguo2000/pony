@@ -30,6 +30,24 @@ paths:
       responses:
         200:
           description: Success
+    put:
+      tags: [user]
+      summary: Modify a user by id
+      operationId: application.funcs.modify_user_by_id
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/Users'
+      responses:
+        200:
+          description: success
+
     delete:
       tags: [user]
       operationId: application.funcs.delete_user
