@@ -70,6 +70,13 @@ paths:
         404:
           description: User does not exist
   /users:
+    get:
+      tags: [user]
+      summary: user list
+      operationId: application.funcs.get_users
+      responses:
+        200:
+          description: success
     put:
       tags: [user]
       summary: Modify a user
@@ -102,11 +109,120 @@ paths:
         200:
           description: success
 
+  /usergroups/{usergroup_id}:
+    get:
+      tags: [usergroup]
+      operationId: application.funcs.get_usergroup
+      summary: Get User Group
+      parameters:
+        - name: "usergroup_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+    put:
+      tags: [usergroup]
+      summary: Modify a usergroup by id
+      operationId: application.funcs.modify_usergroup_by_id
+      parameters:
+        - name: "usergroup_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/UserGroups'
+      responses:
+        200:
+          description: success
+
+    delete:
+      tags: [usergroup]
+      operationId: application.funcs.delete_usergroup
+      summary: Remove a usergroup
+      parameters:
+        - name: "usergroup_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        204:
+          description: UserGroup was deleted
+        404:
+          description: UserGroup does not exist
+  /usergroups:
+    get:
+      tags: [usergroup]
+      summary: Add a user group
+      operationId: application.funcs.get_all_usergroup
+      parameters: []
+      responses:
+        200:
+          description: Success
+    post:
+      tags: [usergroup]
+      summary: Add a user group
+      operationId: application.funcs.add_usergroup
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserGroups'
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: success
+
+  /usergroups/refill/{usergroup_id}:
+    get:
+      tags: [user]
+      operationId: application.funcs.refill
+      summary: Sync UserGroup's available password
+      parameters:
+        - name: "usergroup_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+
 definitions:
   Users:
     type: object
     required:
-    - email
+      - email
     properties:
       name:
         type: string
@@ -114,3 +230,14 @@ definitions:
         type: string
       password:
         type: string
+  UserGroups:
+    type: object
+    required:
+      - maxcapacity
+    properties:
+      group_name:
+        type: string
+      maxcapacity:
+        type: integer
+      current_capacity:
+        type: integer

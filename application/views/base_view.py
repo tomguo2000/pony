@@ -22,4 +22,3 @@ class BaseView(object):
         except Exception as e:
             logger.exception("Run Time Error", e)
             return 'Run Time Error', 500
-

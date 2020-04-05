@@ -9,6 +9,22 @@ class UserService(BaseService):
         return user.__dict__ if user else None
 
     @staticmethod
+    def get_users():
+        users = UserModel.query.all()
+        users_info = list()
+        for user in users:
+            users_info.append({
+                'user_id': user.id,
+                'user_name': user.name,
+                'user_email': user.email,
+                'user_usergroup': user.usergroup,
+                'user_membership': user.membership,
+                'user_membership_starttime': user.membership_starttime,
+                'user_membership_endtime': user.membership_endtime
+            })
+        return users_info
+
+    @staticmethod
     def get_user_by_email(checking_email):
         user = UserModel.query.filter(UserModel.email == checking_email).first()
         return user.__dict__ if user else None
