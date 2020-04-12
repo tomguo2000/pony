@@ -1,6 +1,7 @@
 from .base_service import BaseService
 from application.models.usergroup_model import UserGroupModel
 from application.models.pwresources_model import PWResourcesModel
+from application.models.route_model import RouteModel
 from application.common.foundation import db
 
 class UserGroupService(BaseService):
@@ -29,7 +30,8 @@ class UserGroupService(BaseService):
                 'id':row.id,
                 'group_name':row.group_name,
                 'maxcapacity':row.maxcapacity,
-                'current_capacity':row.current_capacity
+                'current_capacity':row.current_capacity,
+                'which_service':row.which_service
             })
         return results
 
@@ -49,6 +51,9 @@ class UserGroupService(BaseService):
 
     @staticmethod
     def delete_usergroup(usergroup):
+        routes = RouteModel.query.filter(RouteModel.group_id == usergroup).all()
+        for route in routes:
+            route.group_id="None"
         UserGroupModel.query.filter(UserGroupModel.id == usergroup).delete()
 
     @staticmethod
@@ -73,3 +78,13 @@ class UserGroupService(BaseService):
         available = UserGroupModel.query.filter(UserGroupModel.id==usergroup_id,UserGroupModel.uid.is_(None) ).count()
         print(total,available)
         return total,available
+
+    @staticmethod
+    def decrease(usergroup_id):
+        usergroup_data = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
+        usergroup_data.current_capacity -=1
+
+    @staticmethod
+    def increase(usergroup_id):
+        usergroup_data = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
+        usergroup_data.current_capacity +=1

@@ -57,10 +57,12 @@ class ModifyUserGroupView(BaseView):
     def process(self):
         usergroup_body = self.parameters.get('body')
         usergroup_id = self.parameters.get('usergroup_id')
-        usergroup_data = UserGroupService.get_usergroup(usergroup_id)
-        if usergroup_data:
-            if usergroup_data.get('current_capacity') > usergroup_body.get('maxcapacity'):
-                return "maxcapacity too low, this usergroup already have "+str(usergroup_data.get('current_capacity'))+"users",400
+        usergroup_current_data = UserGroupService.get_usergroup(usergroup_id)
+        if usergroup_current_data:
+            if usergroup_current_data.get('current_capacity') > usergroup_body.get('maxcapacity'):
+                return "maxcapacity too low, this usergroup already have "+str(usergroup_current_data.get('current_capacity'))+"users",400
+            if usergroup_body.get('id'):
+                return "id can not be modify",400
             UserGroupService.modify_usergroup_by_id(usergroup_id,usergroup_body)
             db.session.commit()
             return "modify user group success"
@@ -90,6 +92,8 @@ class RefillUserGroupView(BaseView):
 
         if usergroup_data:
             refill_count = usergroup_data.get('maxcapacity') - usergroup_reality.get('pwd_count')
+            print ("maxcapacity:",usergroup_data.get('maxcapacity'))
+            print ("pwd_count:",usergroup_reality.get('pwd_count'))
             UserGroupService.refill(usergroup_id,refill_count)
             db.session.commit()
             return "user group refilled success"

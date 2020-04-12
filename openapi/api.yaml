@@ -69,6 +69,47 @@ paths:
           description: User was deleted
         404:
           description: User does not exist
+  /users/service/{user_id}:
+    get:
+      tags: [user,resource]
+      operationId: application.funcs.get_user_service
+      summary: Get User' Service Resource
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+
+  /users/service:
+    post:
+      tags: [user,service]
+      operationId: application.funcs.active_user_service
+      summary: Active User' Service Resource
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/Services'
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: success
   /users:
     get:
       tags: [user]
@@ -77,18 +118,18 @@ paths:
       responses:
         200:
           description: success
-    put:
-      tags: [user]
-      summary: Modify a user
-      operationId: application.funcs.modify_user
-      parameters:
-        - in: body
-          name: body
-          schema:
-            $ref: '#/definitions/Users'
-      responses:
-        200:
-          description: success
+#    put:
+#      tags: [user]
+#      summary: Modify a user
+#      operationId: application.funcs.modify_user
+#      parameters:
+#        - in: body
+#          name: body
+#          schema:
+#            $ref: '#/definitions/Users'
+#      responses:
+#        200:
+#          description: success
     post:
       tags: [user]
       summary: Add a user
@@ -199,7 +240,7 @@ paths:
 
   /usergroups/refill/{usergroup_id}:
     get:
-      tags: [user]
+      tags: [usergroup]
       operationId: application.funcs.refill
       summary: Sync UserGroup's available password
       parameters:
@@ -217,6 +258,140 @@ paths:
       responses:
         200:
           description: Success
+
+  /routes:
+    get:
+      tags: [route]
+      summary: Add a route
+      operationId: application.funcs.get_routes
+      parameters: []
+      responses:
+        200:
+          description: Success
+    post:
+      tags: [route]
+      summary: Add a route
+      operationId: application.funcs.add_route
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/Routes'
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: success
+
+  /routes/group/{group_id}:
+    get:
+      tags: [route]
+      operationId: application.funcs.get_routes_by_group_id
+      summary: Get routes by group ID
+      parameters:
+        - name: "group_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+
+
+  /routes/{route_id}:
+    get:
+      tags: [route]
+      operationId: application.funcs.get_route
+      summary: Get route by ID
+      parameters:
+        - name: "route_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+    put:
+      tags: [route]
+      summary: Modify a route by id
+      operationId: application.funcs.modify_route_by_id
+      parameters:
+        - name: "route_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/Routes'
+      responses:
+        200:
+          description: success
+
+    delete:
+      tags: [route]
+      operationId: application.funcs.delete_route
+      summary: Remove a route
+      parameters:
+        - name: "route_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        204:
+          description: route was deleted
+        404:
+          description: route does not exist
+
+  /routes/push/{route_id}:
+    get:
+      tags: [route]
+      operationId: application.funcs.push_route
+      summary: Push route to sync data once
+      parameters:
+        - name: "route_id"
+          in: "path"
+          description: "path arg"
+          required: true
+          type: "integer"
+        - name: "flag"
+          in: "query"
+          description: "url arg"
+          required: false
+          type: "integer"
+          default: 1
+      responses:
+        200:
+          description: Success
+
+
 
 definitions:
   Users:
@@ -241,3 +416,44 @@ definitions:
         type: integer
       current_capacity:
         type: integer
+  Routes:
+    type: object
+    properties:
+      group_id:
+        type: integer
+      sequence:
+        type: integer
+      online:
+        type: integer
+      domain:
+        type: string
+      ipaddress:
+        type: string
+      servernameEN:
+        type: string
+      servernameCN:
+        type: string
+      trafficLimit:
+        type: integer
+      trafficUsed:
+        type: integer
+      trafficResetDay:
+        type: string
+  Services:
+    type: object
+    required:
+      - user_id
+      - thunderservice_id
+    properties:
+      user_id:
+        type: string
+      thunderservice_id:
+        type: string
+      service_start_date:
+        type: "string"
+        format: "date"
+        description: "服务开始日期"
+      service_end_date:
+        type: "string"
+        format: "date"
+        description: "服务结束日期"
