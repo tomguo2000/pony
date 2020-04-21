@@ -3,6 +3,8 @@ from application.services.user_service import UserService
 from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
 from application.common.foundation import db
+import jwt
+import datetime
 
 """
 each class is for one API
@@ -174,6 +176,31 @@ class AddUserView(BaseView):
         return {
             'result':"success"
         }
+
+    def check_registed_user_by_email(self,user_email):
+        if UserService.get_user_by_email(user_email):
+            return True
+
+
+class UserLoginView(BaseView):
+
+    def process(self):
+        user_body = self.parameters.get('body')
+        user = UserService.get_user_by_email(user_body['email'])
+        if not user:
+            return {
+                'result': "email not exist!"
+            },401
+
+        if (user_body['password'] == user['password']):
+            token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3) },'SECRET_KEY')
+            return {'token' : token.decode('UTF-8')}
+
+        return {
+            'result': "email not exist!"
+        },401
+
+
 
     def check_registed_user_by_email(self,user_email):
         if UserService.get_user_by_email(user_email):

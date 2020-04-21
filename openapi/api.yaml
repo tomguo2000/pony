@@ -1,459 +1,512 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
   title: Pet Shop Example API
-  version: "1.0.0"
+  version: 1.0.0
   description: Simple example API to store and retrieve pets
   x-audience: external-public
   x-api-id: d2b9be12-eb8b-4d16-83a9-178c8144aedf
-consumes:
-  - application/json
-produces:
-  - application/json
+
+components:
+
+  schemas:
+    Users:
+      type: object
+      required:
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserGroups:
+      type: object
+      required:
+        - maxcapacity
+      properties:
+        group_name:
+          type: string
+        maxcapacity:
+          type: integer
+        current_capacity:
+          type: integer
+    Routes:
+      type: object
+      properties:
+        group_id:
+          type: integer
+        sequence:
+          type: integer
+        online:
+          type: integer
+        domain:
+          type: string
+        ipaddress:
+          type: string
+        servernameEN:
+          type: string
+        servernameCN:
+          type: string
+        trafficLimit:
+          type: integer
+        trafficUsed:
+          type: integer
+        trafficResetDay:
+          type: string
+    Services:
+      type: object
+      required:
+        - user_id
+        - thunderservice_id
+      properties:
+        user_id:
+          type: string
+        thunderservice_id:
+          type: string
+        service_start_date:
+          type: string
+          format: date
+          description: 服务开始日期
+        service_end_date:
+          type: string
+          format: date
+          description: 服务结束日期
+
 paths:
-  /users/{user_id}:
+  /login:
+    post:
+      tags:
+        - user
+      summary: User login
+      operationId: application.funcs.user_login
+      parameters:
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: success
+
+  "/users/{user_id}":
     get:
-      tags: [user]
+      tags:
+        - user
       operationId: application.funcs.get_user
       summary: Get User
       parameters:
-        - name: "user_id"
-          in: "path"
-          description: "path arg"
+        - name: user_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
     put:
-      tags: [user]
+      tags:
+        - user
       summary: Modify a user by id
       operationId: application.funcs.modify_user_by_id
       parameters:
-        - name: "user_id"
-          in: "path"
-          description: "path arg"
+        - name: user_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - in: body
-          name: body
           schema:
-            $ref: '#/definitions/Users'
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
       responses:
-        200:
+        "200":
           description: success
-
     delete:
-      tags: [user]
+      tags:
+        - user
       operationId: application.funcs.delete_user
       summary: Remove a user
       parameters:
-        - name: "user_id"
-          in: "path"
-          description: "path arg"
+        - name: user_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        204:
+        "204":
           description: User was deleted
-        404:
+        "404":
           description: User does not exist
-  /users/service/{user_id}:
+  "/users/service/{user_id}":
     get:
-      tags: [user,resource]
+      tags:
+        - user
+        - resource
       operationId: application.funcs.get_user_service
       summary: Get User' Service Resource
       parameters:
-        - name: "user_id"
-          in: "path"
-          description: "path arg"
+        - name: user_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
 
   /users/service:
     post:
-      tags: [user,service]
+      tags:
+        - user
+        - service
       operationId: application.funcs.active_user_service
       summary: Active User' Service Resource
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/Services'
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Services"
+        required: true
       responses:
-        200:
+        "200":
           description: success
   /users:
     get:
-      tags: [user]
+      tags:
+        - user
       summary: user list
       operationId: application.funcs.get_users
       responses:
-        200:
+        "200":
           description: success
-#    put:
-#      tags: [user]
-#      summary: Modify a user
-#      operationId: application.funcs.modify_user
-#      parameters:
-#        - in: body
-#          name: body
-#          schema:
-#            $ref: '#/definitions/Users'
-#      responses:
-#        200:
-#          description: success
     post:
-      tags: [user]
+      tags:
+        - user
       summary: Add a user
       operationId: application.funcs.add_user
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/Users'
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
       responses:
-        200:
+        "200":
           description: success
-
-  /usergroups/{usergroup_id}:
+  "/usergroups/{usergroup_id}":
     get:
-      tags: [usergroup]
+      tags:
+        - usergroup
       operationId: application.funcs.get_usergroup
       summary: Get User Group
       parameters:
-        - name: "usergroup_id"
-          in: "path"
-          description: "path arg"
+        - name: usergroup_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
     put:
-      tags: [usergroup]
+      tags:
+        - usergroup
       summary: Modify a usergroup by id
       operationId: application.funcs.modify_usergroup_by_id
       parameters:
-        - name: "usergroup_id"
-          in: "path"
-          description: "path arg"
+        - name: usergroup_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - in: body
-          name: body
           schema:
-            $ref: '#/definitions/UserGroups'
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserGroups"
       responses:
-        200:
+        "200":
           description: success
-
     delete:
-      tags: [usergroup]
+      tags:
+        - usergroup
       operationId: application.funcs.delete_usergroup
       summary: Remove a usergroup
       parameters:
-        - name: "usergroup_id"
-          in: "path"
-          description: "path arg"
+        - name: usergroup_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        204:
+        "204":
           description: UserGroup was deleted
-        404:
+        "404":
           description: UserGroup does not exist
   /usergroups:
     get:
-      tags: [usergroup]
+      tags:
+        - usergroup
       summary: Add a user group
       operationId: application.funcs.get_all_usergroup
-      parameters: []
       responses:
-        200:
+        "200":
           description: Success
     post:
-      tags: [usergroup]
+      tags:
+        - usergroup
       summary: Add a user group
       operationId: application.funcs.add_usergroup
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/UserGroups'
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserGroups"
+        required: true
       responses:
-        200:
+        "200":
           description: success
-
-  /usergroups/refill/{usergroup_id}:
+  "/usergroups/refill/{usergroup_id}":
     get:
-      tags: [usergroup]
+      tags:
+        - usergroup
       operationId: application.funcs.refill
       summary: Sync UserGroup's available password
       parameters:
-        - name: "usergroup_id"
-          in: "path"
-          description: "path arg"
+        - name: usergroup_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
-
   /routes:
     get:
-      tags: [route]
+      tags:
+        - route
       summary: Add a route
       operationId: application.funcs.get_routes
-      parameters: []
       responses:
-        200:
+        "200":
           description: Success
     post:
-      tags: [route]
+      tags:
+        - route
       summary: Add a route
       operationId: application.funcs.add_route
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/Routes'
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Routes"
+        required: true
       responses:
-        200:
+        "200":
           description: success
-
-  /routes/group/{group_id}:
+  "/routes/group/{group_id}":
     get:
-      tags: [route]
+      tags:
+        - route
       operationId: application.funcs.get_routes_by_group_id
       summary: Get routes by group ID
       parameters:
-        - name: "group_id"
-          in: "path"
-          description: "path arg"
+        - name: group_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
-
-
-  /routes/{route_id}:
+  "/routes/{route_id}":
     get:
-      tags: [route]
+      tags:
+        - route
       operationId: application.funcs.get_route
       summary: Get route by ID
       parameters:
-        - name: "route_id"
-          in: "path"
-          description: "path arg"
+        - name: route_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
     put:
-      tags: [route]
+      tags:
+        - route
       summary: Modify a route by id
       operationId: application.funcs.modify_route_by_id
       parameters:
-        - name: "route_id"
-          in: "path"
-          description: "path arg"
+        - name: route_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - in: body
-          name: body
           schema:
-            $ref: '#/definitions/Routes'
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Routes"
       responses:
-        200:
+        "200":
           description: success
-
     delete:
-      tags: [route]
+      tags:
+        - route
       operationId: application.funcs.delete_route
       summary: Remove a route
       parameters:
-        - name: "route_id"
-          in: "path"
-          description: "path arg"
+        - name: route_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        204:
+        "204":
           description: route was deleted
-        404:
+        "404":
           description: route does not exist
-
-  /routes/push/{route_id}:
+  "/routes/push/{route_id}":
     get:
-      tags: [route]
+      tags:
+        - route
       operationId: application.funcs.push_route
       summary: Push route to sync data once
       parameters:
-        - name: "route_id"
-          in: "path"
-          description: "path arg"
+        - name: route_id
+          in: path
+          description: path arg
           required: true
-          type: "integer"
-        - name: "flag"
-          in: "query"
-          description: "url arg"
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
           required: false
-          type: "integer"
-          default: 1
+          schema:
+            type: integer
+            default: 1
       responses:
-        200:
+        "200":
           description: Success
-
-
-
-definitions:
-  Users:
-    type: object
-    required:
-      - email
-    properties:
-      name:
-        type: string
-      email:
-        type: string
-      password:
-        type: string
-  UserGroups:
-    type: object
-    required:
-      - maxcapacity
-    properties:
-      group_name:
-        type: string
-      maxcapacity:
-        type: integer
-      current_capacity:
-        type: integer
-  Routes:
-    type: object
-    properties:
-      group_id:
-        type: integer
-      sequence:
-        type: integer
-      online:
-        type: integer
-      domain:
-        type: string
-      ipaddress:
-        type: string
-      servernameEN:
-        type: string
-      servernameCN:
-        type: string
-      trafficLimit:
-        type: integer
-      trafficUsed:
-        type: integer
-      trafficResetDay:
-        type: string
-  Services:
-    type: object
-    required:
-      - user_id
-      - thunderservice_id
-    properties:
-      user_id:
-        type: string
-      thunderservice_id:
-        type: string
-      service_start_date:
-        type: "string"
-        format: "date"
-        description: "服务开始日期"
-      service_end_date:
-        type: "string"
-        format: "date"
-        description: "服务结束日期"

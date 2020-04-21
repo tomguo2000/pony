@@ -5,7 +5,6 @@ import connexion
 import os
 from application.common.foundation import db
 
-
 def create_app():
     app = connexion.FlaskApp(__name__, specification_dir='../openapi/')
     app.add_api("api.yaml")
@@ -35,4 +34,4 @@ load_config(app.app)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    app.run(port=8080)
+    app.run(port=8080,debug=True)
