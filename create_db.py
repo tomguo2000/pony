@@ -1,31 +1,66 @@
 
+'''
+from env shell, run:
+
+python create_db.py db migrate -m "new"
+pyrhon create_db.py db upgrade
+
+OR
+
+python create_db.py shell
+>>>from create_db import db
+>>>db.drop_all()
+>>>db.create_all()
+>>>quit()
+$ python create_db.py db stamp heads
+$ python create_db.py db migrate -m "new"
+$ python create_db.py db upgrade
+'''
 from flask import Flask
+import connexion
+import os
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 from application.app import flask_app
-
-app = Flask(__name__)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = flask_app.config['SQLALCHEMY_DATABASE_URI']
-app.config["SQLALCHEMY_COMMIT_ON_TEARDOWN"]=True
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db=SQLAlchemy(app)
-
-migrate = Migrate(app,db)
-manager =Manager(app,db)
-manager.add_command("db",MigrateCommand)
-
-class Role(db.Model): #需继承模型
-    __tablename__="roles" #db中表明，如果不设置，则会与class同的默认名
-    id=db.Column(db.Integer,primary_key=True) #SQLAlchemy要求必须有主键，一般命名为id即可
-    name=db.Column(db.String(50),unique=True) #表示name为字符串，不重复
+from application.common.foundation import db
 
 from application.models.user_model import UserModel
 from application.models.pwresources_model import PWResourcesModel
 from application.models.route_model import RouteModel
 from application.models.thunderservice_model import ThunderserviceModel
 from application.models.usergroup_model import UserGroupModel
+
+
+def create_app():
+    app = connexion.FlaskApp(__name__, specification_dir='openapi/')
+    app.add_api("api.yaml")
+    load_config(app.app)
+    configure_foundations(app.app)
+    return app
+
+
+def configure_foundations(app):
+    db.app = app
+    db.init_app(app)
+
+def load_config(app):
+    app.config.from_object('config.settings')
+
+    config_file = 'config.local'
+
+    if os.path.exists(config_file):
+        app.config.from_object(config_file)
+
+
+app = create_app()
+flask_app = app.app
+load_config(app.app)
+
+migrate = Migrate(flask_app,db)
+manager =Manager(flask_app,db)
+manager.add_command("db",MigrateCommand)
+
 
 if __name__ == '__main__':
     manager.run()
