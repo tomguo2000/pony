@@ -4,6 +4,7 @@ import jwt
 from application.models.user_model import UserModel
 
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):

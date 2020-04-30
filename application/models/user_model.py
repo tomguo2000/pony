@@ -13,3 +13,7 @@ class UserModel(db.Model):
     membership = db.Column(db.String(2), nullable=True)
     membership_starttime = db.Column(db.DateTime, nullable=True)
     membership_endtime = db.Column(db.DateTime, nullable=False)
+    token = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return '<UserModel %r>' % (self.email)

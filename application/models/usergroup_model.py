@@ -9,3 +9,7 @@ class UserGroupModel(db.Model):
     maxcapacity = db.Column(db.Integer, nullable=True)
     current_capacity = db.Column(db.Integer, default=0, nullable=True)
     which_service = db.Column(db.String(50), nullable=True)
+
+
+    def __repr__(self):
+        return '<UserGroupModel %r>' % (self.id)

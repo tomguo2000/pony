@@ -16,3 +16,6 @@ class RouteModel(db.Model):
     trafficLimit = db.Column(db.Integer, nullable=True)
     trafficUsed = db.Column(db.Integer, nullable=True)
     trafficResetDay = db.Column(db.String(2), nullable=True)
+
+    def __repr__(self):
+        return '<RouteModel %r>' % (self.id)

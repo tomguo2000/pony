@@ -3,6 +3,8 @@ from application.services.user_service import UserService
 from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
 from application.common.foundation import db
+from application.app import flask_app
+
 import jwt
 import datetime
 
@@ -193,8 +195,9 @@ class UserLoginView(BaseView):
             },401
 
         if (user_body['password'] == user['password']):
-            token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3) },'SECRET_KEY')
-            return {'token' : token.decode('UTF-8')}
+            token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3) },flask_app.config['SECRET_KEY'])
+            refreshToken = jwt.encode({'user_id':user['id'], 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
+            return {'token' : token.decode('UTF-8'),'refreshToken':refreshToken.decode('UTF-8')}
 
         return {
             'result': "email not exist!"
