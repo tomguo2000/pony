@@ -2,8 +2,7 @@ from flask import request
 from functools import wraps
 import jwt
 from application.models.user_model import UserModel
-
-
+import config.settings
 
 def token_required(f):
     @wraps(f)
@@ -17,10 +16,10 @@ def token_required(f):
             return {'message' : 'Token is missing!'}, 401
 
         try:
-            data = jwt.decode(token, 'SECRET_KEY')
+            data = jwt.decode(token, config.settings.SECRET_KEY)
             current_user = UserModel.query.filter(UserModel.id == data['user_id']).first()
         except:
-            return {'message' : 'Token is invalid!'}, 401
+            return {'message' : 'Fuck! Token is invalid!'}, 401
 
         return f(current_user, *args, **kwargs)
 

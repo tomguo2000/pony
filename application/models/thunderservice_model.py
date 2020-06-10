@@ -7,7 +7,8 @@ class ThunderserviceModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     membershipCN = db.Column(db.String(20), nullable=False)
     membershipEN = db.Column(db.String(20), nullable=False)
-    price = (db.Float)
+    price = db.Column(db.Float)
+
 
     def __repr__(self):
         return '<ThunderserviceModel %r>' % (self.id)

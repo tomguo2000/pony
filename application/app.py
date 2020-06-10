@@ -4,14 +4,6 @@ import logging
 import connexion
 import os
 from application.common.foundation import db
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-
-from application.models.user_model import UserModel
-from application.models.pwresources_model import PWResourcesModel
-from application.models.route_model import RouteModel
-from application.models.thunderservice_model import ThunderserviceModel
-from application.models.usergroup_model import UserGroupModel
 
 
 def create_app():
@@ -40,14 +32,6 @@ def load_config(app):
 app = create_app()
 flask_app = app.app
 load_config(app.app)
-admin = Admin(app.app)
-
-
-admin.add_view(ModelView(UserModel, db.session))
-admin.add_view(ModelView(PWResourcesModel, db.session))
-admin.add_view(ModelView(RouteModel, db.session))
-admin.add_view(ModelView(ThunderserviceModel, db.session))
-admin.add_view(ModelView(UserGroupModel, db.session))
 
 
 if __name__ == "__main__":

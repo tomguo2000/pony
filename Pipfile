@@ -9,6 +9,7 @@ verify_ssl = true
 connexion = {extras = ["swagger-ui"],version = "*"}
 flask-sqlalchemy = "*"
 mysqlclient = "*"
+pycryptodome = "*"
 
 [requires]
 python_version = "3.7"
