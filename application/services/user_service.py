@@ -3,7 +3,13 @@ from application.models.user_model import UserModel
 from application.models.pwresources_model import PWResourcesModel
 from application.common.foundation import db
 
+
 class UserService(BaseService):
+    @staticmethod
+    def get_user_amount():
+        userAmount = UserModel.query.filter().count()
+        return userAmount if userAmount else None
+
     @staticmethod
     def get_user(user_id):
         user = UserModel.query.filter(UserModel.id == user_id).first()
@@ -16,33 +22,45 @@ class UserService(BaseService):
         return user_service_password.__dict__ if user_service_password else None
 
     @staticmethod
-    def get_users():
+    def get_users(page,perPage):
         users = UserModel.query.all()
-        users_info = list()
-        for user in users:
-            users_info.append({
-                'user_id': user.id,
-                'user_name': user.name,
-                'user_email': user.email,
-                'user_usergroup': user.usergroup,
-                'user_membership': user.membership,
-                'user_membership_starttime': user.membership_starttime,
-                'user_membership_endtime': user.membership_endtime
-            })
-        return users_info
+        # users_info = list()
+        # for user in users:
+        #     users_info.append({
+        #         'user_id': user.id,
+        #         'user_name': user.name,
+        #         'user_email': user.email,
+        #         'user_email_verified': user.email_verified,
+        #         'user_account_status': user.account_status,
+        #         'user_register_source': user.register_source,
+        #         'user_usergroup': user.usergroup_id,
+        #         'user_thunderservice': user.thunderservice_id,
+        #         'user_service_starttime': user.service_starttime,
+        #         'user_service_endtime': user.service_endtime
+        #     })
+        return users
 
     @staticmethod
     def get_user_by_email(checking_email):
         user = UserModel.query.filter(UserModel.email == checking_email).first()
-        return user.__dict__ if user else None
+        return user if user else None
 
     @staticmethod
-    def add_user(user_name,user_email,user_password):
+    def add_user(user_name,user_email,user_password,register_source,register_datetime):
+        from application.common.dict import thunder_service_ID
         user = UserModel(
             name = user_name,
             email = user_email,
             password = user_password,
+            email_verified = False,
+            account_status = "ACCOUNT_ACTIVED",
+            register_datetime = register_datetime,
+            register_source = register_source,
+            thunderservice_id = thunder_service_ID["LOW_SPEED"],
+            thunderservice_starttime = register_datetime,
+            thunderservice_endtime = 4102367245000
         )
+        user.set_password(user.password)
         db.session.add(user)
         #return user.__dict__ if user else None
 
@@ -65,3 +83,38 @@ class UserService(BaseService):
     def assign_new_pwd(user_id,usergroup_id):
         pwd_data = PWResourcesModel.query.filter(PWResourcesModel.group_id == usergroup_id).filter(PWResourcesModel.uid == None).first()
         pwd_data.uid = user_id
+
+    @staticmethod
+    def save_token(user_id,token,refreshToken):
+        user = UserModel.query.filter(UserModel.id == user_id).first()
+        user.token = token
+        user.refreshToken = refreshToken
+
+    @staticmethod
+    def active_thunderservice(user_id,thunderservice_id,thunderservice_starttime,thunderservice_endtime):
+        from application.models.usergroup_model import UserGroupModel
+        from application.models.pwresources_model import PWResourcesModel
+        from application.services.usergroup_service import UserGroupService
+        #Step1：按照已经分配的thunderservice找到可用的usergroup（usergroup的assined没有满）
+        print (user_id,str(thunderservice_id),thunderservice_starttime,thunderservice_endtime)
+        usergroups = UserGroupModel.query.filter(UserGroupModel.maxcapacity>UserGroupModel.current_capacity).all()
+        available=[]
+        for row in usergroups:
+            if str(thunderservice_id) in (row.which_thunderservice.split(",")):
+                temp = [row.current_capacity / row.maxcapacity, row.id]
+                available.append(temp)
+        available.sort()
+        usergroup = available[0][1]
+
+        #Step2：密码表里，把第一条可用的密码和usergroup记录中，写入userid
+        data = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id == usergroup , PWResourcesModel.user_id == None).first()
+        data.user_id = user_id
+
+        #Step3：usergroup表里的已分配数+1
+        UserGroupService.increase(usergroup)
+
+        #Step4：user表里写入分配的usergroup,thunderservice_starttime,thunderservice_endtime
+        user = UserModel.query.filter(UserModel.id == user_id).first()
+        user.usergroup_id = usergroup
+        user.thunderservice_starttime = thunderservice_starttime+1
+        user.thunderservice_endtime = thunderservice_endtime+1

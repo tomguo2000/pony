@@ -4,9 +4,11 @@ from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
 from application.common.foundation import db
 from application.app import flask_app
+from flask import request
+from application.common.returncode import returncode
 
 import jwt
-import datetime
+import datetime,time
 
 """
 each class is for one API
@@ -21,14 +23,16 @@ class GetUserView(BaseView):
         user_info = UserService.get_user(user_id)
         if (user_info):
             return {
-                'user_id': user_info.get('id'),
-                'user_name': user_info.get('name'),
-                'user_email': user_info.get('email'),
-                'user_password': user_info.get('password11'),
-                'user_usergroup': user_info.get('usergroup'),
-                'user_membership': user_info.get('membership'),
-                'user_membership_starttime': user_info.get('membership_starttime'),
-                'user_membership_endtime': user_info.get('membership_endtime')
+                'id': user_info.get('id'),
+                'name': user_info.get('name'),
+                'account_status': user_info.get('account_status'),
+                'register_source': user_info.get('register_source'),
+                'email': user_info.get('email'),
+                'email_verified': user_info.get('email_verified'),
+                'usergroup_id': user_info.get('usergroup_id'),
+                'thunderservice_id':user_info.get('thunderservice_id'),
+                'service_starttime': user_info.get('service_starttime'),
+                'service_endtime': user_info.get('service_endtime')
             }
         return 'None',400
 
@@ -130,8 +134,35 @@ class ActiveUserServiceView(BaseView):
 
 class GetUsersView(BaseView):
     def process(self):
-        users = UserService.get_users()
-        return users
+        page = request.args.get('page', 1, type=int)
+        perPage = request.args.get('perPage', 10, type=int)
+
+        totals = UserService.get_user_amount()
+        totalPages = (totals + perPage -1 ) // perPage
+        print("userAmount:", totals,totalPages)
+        users = UserService.get_users(page,perPage)
+        usersview = list()
+        for user in users:
+            usersview.append({
+                'user_id': user.id,
+                'user_register_source': user.register_source,
+                'user_email': user.email,
+                'user_email_verified': user.email_verified,
+                'user_register_datetime': user.register_datetime,
+                'user_thunderservice': user.thunderservice_id,
+                'user_usergroup': user.usergroup_id,
+                'user_account_status': user.account_status,
+                'user_service_endtime': user.thunderservice_endtime
+            })
+        return {
+            "code":200,
+            "message":"get users success",
+            "results":{
+                "totals": totals,
+                "totalPages":totalPages,
+                "list":usersview
+            }
+        }
 
 class DeleteUserView(BaseView):
 
@@ -171,12 +202,22 @@ class AddUserView(BaseView):
         user_body = self.parameters.get('body')
 
         if self.check_registed_user_by_email(user_body.get('email')):
-            return "This email already registed",400
+            return {
+                "code":4010,
+                "message": returncode['4010'],
+            } ,400
 
-        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'))
+        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'),user_body.get('source'),time.time()*1000)
         db.session.commit()
+
+        #get user service info again, active it.
+        user = UserService.get_user_by_email(user_body.get('email'))
+        UserService.active_thunderservice(user.id,user.thunderservice_id,user.thunderservice_starttime,user.thunderservice_endtime)
+        db.session.commit()
+
         return {
-            'result':"success"
+            "code":200,
+            "message":"add user success",
         }
 
     def check_registed_user_by_email(self,user_email):
@@ -185,22 +226,37 @@ class AddUserView(BaseView):
 
 
 class UserLoginView(BaseView):
-
     def process(self):
         user_body = self.parameters.get('body')
         user = UserService.get_user_by_email(user_body['email'])
         if not user:
             return {
-                'result': "email not exist!"
+                "code":4001,
+                "message": returncode['4001'],
             },401
 
-        if (user_body['password'] == user['password']):
-            token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=3) },flask_app.config['SECRET_KEY'])
-            refreshToken = jwt.encode({'user_id':user['id'], 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
-            return {'token' : token.decode('UTF-8'),'refreshToken':refreshToken.decode('UTF-8')}
+        # if (user_body['password'] == user['password']):
+        if user.check_password(user_body['password']):
+            # token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
+            # refreshToken = jwt.encode({'user_id':user['id'], 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
+            token = jwt.encode({'user_id':user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
+            refreshToken = jwt.encode({'user_id':user.id, 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
+            UserService.save_token(user.id,token,refreshToken)
+            db.session.commit()
+            return {
+                "code":200,
+                "message":"login success",
+                "results":{
+                    "credential":{
+                        "token" : token.decode('UTF-8'),
+                        "refreshToken":refreshToken.decode('UTF-8')
+                    }
+                }
+            }
 
         return {
-            'result': "email not exist!"
+            "code":4002,
+            "message": returncode['4002'],
         },401
 
 

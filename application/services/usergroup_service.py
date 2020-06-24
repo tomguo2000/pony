@@ -12,9 +12,9 @@ class UserGroupService(BaseService):
 
     @staticmethod
     def get_usergroup_reality(usergroup_id):
-        pwd_count = PWResourcesModel.query.filter(PWResourcesModel.group_id==usergroup_id).count()
-        pwd_assigned = PWResourcesModel.query.filter(PWResourcesModel.group_id==usergroup_id).filter(PWResourcesModel.uid != None).count()
-        pwd_available = PWResourcesModel.query.filter(PWResourcesModel.group_id==usergroup_id).filter(PWResourcesModel.uid == None).count()
+        pwd_count = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id==usergroup_id).count()
+        pwd_assigned = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id==usergroup_id).filter(PWResourcesModel.user_id != None).count()
+        pwd_available = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id==usergroup_id).filter(PWResourcesModel.user_id == None).count()
         return {
             "pwd_count":pwd_count,
             "pwd_assigned":pwd_assigned,
@@ -67,7 +67,7 @@ class UserGroupService(BaseService):
             oripassword = o.hexdigest().encode('UTF-8')
             h = (hashlib.sha224(oripassword))
             hashedpassword = h.hexdigest()
-            objects.append(PWResourcesModel(group_id=usergroup_id, oripassword=oripassword, hashedpassword=hashedpassword))
+            objects.append(PWResourcesModel(usergroup_id=usergroup_id, oripassword=oripassword, hashedpassword=hashedpassword))
             i+=1
         db.session.add_all(objects)
 

@@ -20,6 +20,8 @@ components:
           type: string
         password:
           type: string
+        source:
+          type: string
     UserGroups:
       type: object
       required:
@@ -74,6 +76,26 @@ components:
           description: 服务结束日期
 
 paths:
+
+  /init:
+    get:
+      tags:
+        - user
+      summary: init
+      operationId: application.funcs.init
+      parameters:
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: success
+
+
   /login:
     post:
       tags:
