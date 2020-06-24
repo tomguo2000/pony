@@ -22,22 +22,8 @@ class UserService(BaseService):
         return user_service_password.__dict__ if user_service_password else None
 
     @staticmethod
-    def get_users(page,perPage):
-        users = UserModel.query.all()
-        # users_info = list()
-        # for user in users:
-        #     users_info.append({
-        #         'user_id': user.id,
-        #         'user_name': user.name,
-        #         'user_email': user.email,
-        #         'user_email_verified': user.email_verified,
-        #         'user_account_status': user.account_status,
-        #         'user_register_source': user.register_source,
-        #         'user_usergroup': user.usergroup_id,
-        #         'user_thunderservice': user.thunderservice_id,
-        #         'user_service_starttime': user.service_starttime,
-        #         'user_service_endtime': user.service_endtime
-        #     })
+    def get_users(pageNum,pageSize):
+        users = UserModel.query.filter().limit(pageSize).offset((pageNum-1)*pageSize)
         return users
 
     @staticmethod

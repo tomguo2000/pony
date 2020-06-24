@@ -134,13 +134,13 @@ class ActiveUserServiceView(BaseView):
 
 class GetUsersView(BaseView):
     def process(self):
-        page = request.args.get('page', 1, type=int)
-        perPage = request.args.get('perPage', 10, type=int)
+        pageNum = request.args.get('pageNum', 1, type=int)
+        pageSize = request.args.get('pageSize', 10, type=int)
 
         totals = UserService.get_user_amount()
-        totalPages = (totals + perPage -1 ) // perPage
+        totalPages = (totals + pageSize -1 ) // pageSize
         print("userAmount:", totals,totalPages)
-        users = UserService.get_users(page,perPage)
+        users = UserService.get_users(pageNum,pageSize)
         usersview = list()
         for user in users:
             usersview.append({
