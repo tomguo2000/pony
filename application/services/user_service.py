@@ -83,7 +83,7 @@ class UserService(BaseService):
         from application.models.pwresources_model import PWResourcesModel
         from application.services.usergroup_service import UserGroupService
 
-        # logging.info (user_id,str(thunderservice_id),thunderservice_starttime,thunderservice_endtime)
+        logging.info ("active thunderservice: userid={},thunderservice_id={},thunderservice_starttime={},thunderservice_endtime={}".format(user_id,thunderservice_id,thunderservice_starttime,thunderservice_endtime))
         #Step1：按照已经分配的thunderservice找到可用的usergroup（usergroup的assined没有满）
         usergroups = UserGroupModel.query.filter(UserGroupModel.maxcapacity>UserGroupModel.current_capacity).all()
         available=[]

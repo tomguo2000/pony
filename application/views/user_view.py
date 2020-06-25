@@ -6,7 +6,7 @@ from application.common.foundation import db
 from application.app import flask_app
 from flask import request
 from application.common.returncode import returncode
-
+import logging
 import jwt
 import datetime,time
 
