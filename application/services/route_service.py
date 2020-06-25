@@ -31,24 +31,25 @@ class RouteService(BaseService):
 
     @staticmethod
     def get_routes_by_group_ID(group_id):
-        routes = RouteModel.query.filter(RouteModel.group_id == group_id).all()
-        routes_info = list()
-        for route in routes:
-            routes_info.append({
-                'id': route.id,
-                'group_id': route.group_id,
-                'sequence': route.sequence,
-                'online': route.online,
-                'domain': route.domain,
-                'ipaddress': route.ipaddress,
-                'servernameEN': route.servernameEN,
-                'servernameCN': route.servernameCN,
-                'routeStarttime': route.routeStarttime,
-                'trafficLimit': route.trafficLimit,
-                'trafficUsed': route.trafficUsed,
-                'trafficResetDay': route.trafficResetDay
-            })
-        return routes_info
+        routes = RouteModel.query.filter(RouteModel.usergroup_id == group_id).all()
+        return routes
+        # routes_info = list()
+        # for route in routes:
+        #     routes_info.append({
+        #         'id': route.id,
+        #         'group_id': route.usergroup_id,
+        #         'sequence': route.sequence,
+        #         'online': route.online,
+        #         'domain': route.domain,
+        #         'ipaddress': route.ipaddress,
+        #         'servernameEN': route.servernameEN,
+        #         'servernameCN': route.servernameCN,
+        #         'routeStarttime': route.routeStarttime,
+        #         'trafficLimit': route.trafficLimit,
+        #         'trafficUsed': route.trafficUsed,
+        #         'trafficResetDay': route.trafficResetDay
+        #     })
+        # return routes_info
 
     @staticmethod
     def add_route(route_data):

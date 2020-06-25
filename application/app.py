@@ -35,5 +35,6 @@ load_config(app.app)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename="test.log", filemode="w", format="%(asctime)s %(name)s:%(levelname)s:%(message)s", datefmt="%d-%m-%Y %H:%M:%S")
+    logging.basicConfig(level=logging.DEBUG)
     app.run(port=8080,debug=True)

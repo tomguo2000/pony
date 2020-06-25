@@ -243,10 +243,47 @@ class UserLoginView(BaseView):
             refreshToken = jwt.encode({'user_id':user.id, 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
             UserService.save_token(user.id,token,refreshToken)
             db.session.commit()
+
+            pwresource = UserService.get_user_service_password(user.id)
+            if pwresource:
+                thunderservice_password = pwresource.oripassword
+            else:
+                thunderservice_password = 'glnvod'     #万一没有，就拿这个顶
+
+            routes = RouteService.get_routes_by_group_ID(user.usergroup_id)
+            routes_info = list()
+            for route in routes:
+                routes_info.append({
+                    'id': route.id,
+                    'group_id': route.usergroup_id,
+                    'sequence': route.sequence,
+                    'online': route.online,
+                    'domain': route.domain,
+                    'ipaddress': route.ipaddress,
+                    'servernameEN': route.servernameEN,
+                    'servernameCN': route.servernameCN,
+                    'routeStarttime': route.routeStarttime,
+                    'trafficLimit': route.trafficLimit,
+                    'trafficUsed': route.trafficUsed,
+                    'trafficResetDay': route.trafficResetDay,
+                    'password':thunderservice_password
+                })
+
             return {
                 "code":200,
                 "message":"login success",
                 "results":{
+                    "user":{
+                        "user_id":user.id,
+                        "thunderservice_id":user.thunderservice_id,
+                        "thunderservice_endtime":user.thunderservice_endtime,
+                        "usergroup_id":user.usergroup_id
+
+                    },
+                    "pwresource":{
+                        "thunderservice_password":thunderservice_password
+                    },
+                    "routes":routes_info,
                     "credential":{
                         "token" : token.decode('UTF-8'),
                         "refreshToken":refreshToken.decode('UTF-8')

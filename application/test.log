@@ -1,0 +1,4 @@
+25-06-2020 12:52:19 werkzeug:WARNING: * Debugger is active!
+25-06-2020 12:52:19 werkzeug:INFO: * Debugger PIN: 328-519-513
+25-06-2020 12:52:23 werkzeug:INFO:127.0.0.1 - - [25/Jun/2020 12:52:23] "[37mPOST /login HTTP/1.1[0m" 200 -
+25-06-2020 12:52:45 werkzeug:INFO:127.0.0.1 - - [25/Jun/2020 12:52:45] "[37mPOST /login HTTP/1.1[0m" 200 -
