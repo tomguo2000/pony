@@ -3,10 +3,12 @@ from application.models.usergroup_model import UserGroupModel
 from application.models.pwresources_model import PWResourcesModel
 from application.models.route_model import RouteModel
 from application.common.foundation import db
+import logging
 
 class UserGroupService(BaseService):
     @staticmethod
     def get_usergroup(usergroup_id):
+        logging.info("333333333333")
         usergroup = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
         return usergroup.__dict__ if usergroup else None
 
