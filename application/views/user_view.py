@@ -255,7 +255,7 @@ class UserLoginView(BaseView):
             for route in routes:
                 routes_info.append({
                     'id': route.id,
-                    'group_id': route.usergroup_id,
+                    'usergroup_id': route.usergroup_id,
                     'sequence': route.sequence,
                     'online': route.online,
                     'domain': route.domain,

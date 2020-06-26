@@ -97,6 +97,10 @@ def add_user(current_user,body):
 
 def init():
     from application.models.user_model import UserModel
+    from application.models.usergroup_model import UserGroupModel
+    from application.models.thunderservice_model import ThunderserviceModel
+    from application.models.route_model import RouteModel
+    from application.services.usergroup_service import UserGroupService
     from application.common.foundation import db
     import time
     user = UserModel(
@@ -112,8 +116,119 @@ def init():
     user.set_password(user.password)
     db.session.add(user)
     db.session.commit()
+
+    usergroup1 = UserGroupModel(
+        id = 1,
+        group_name = "LOW_SPEED",
+        maxcapacity = 30,
+        current_capacity = 0,
+        which_thunderservice = "1"
+    )
+    usergroup2 = UserGroupModel(
+        id = 2,
+        group_name = "TRIAL",
+        maxcapacity = 30,
+        current_capacity = 0,
+        which_thunderservice = "2"
+    )
+    usergroup3 = UserGroupModel(
+        id = 3,
+        group_name = "FUFEI1",
+        maxcapacity = 30,
+        current_capacity = 0,
+        which_thunderservice = "3,4,5"
+    )
+    db.session.add(usergroup1)
+    db.session.add(usergroup2)
+    db.session.add(usergroup3)
+    db.session.commit()
+
+    thunderservice1 = ThunderserviceModel(
+        id = 1,
+        membershipCN = "普通会员",
+        membershipEN = "membership",
+        price = 0
+    )
+    thunderservice2 = ThunderserviceModel(
+        id = 2,
+        membershipCN = "体验会员",
+        membershipEN = "trial",
+        price = 0
+    )
+    thunderservice3 = ThunderserviceModel(
+        id = 3,
+        membershipCN = "银牌会员",
+        membershipEN = "silver",
+        price = 4.99
+    )
+    thunderservice4 = ThunderserviceModel(
+        id = 4,
+        membershipCN = "金牌会员",
+        membershipEN = "golden",
+        price = 49.99
+    )
+    thunderservice5 = ThunderserviceModel(
+        id = 5,
+        membershipCN = "铂金会员",
+        membershipEN = "platinum",
+        price = 89.99
+    )
+    db.session.add(thunderservice1)
+    db.session.add(thunderservice2)
+    db.session.add(thunderservice3)
+    db.session.add(thunderservice4)
+    db.session.add(thunderservice5)
+    db.session.commit()
+
+    route1 = RouteModel(
+        id = 1,
+        sequence = 1,
+        online = True,
+        domain = "free6.thchroute.club",
+        ipaddress = "free6.thchroute.club",
+        servernameEN = "low_speed_route6",
+        servernameCN = "低速线路6",
+        routeStarttime =1593532800000,
+        trafficLimit = -1,
+        trafficUsed = 0,
+        trafficResetDay = "1",
+        usergroup_id = 1
+    )
+    route2 = RouteModel(
+        id = 2,
+        sequence = 1,
+        online = True,
+        domain = "trial.thchroute.club",
+        ipaddress = "trial.thchroute.club",
+        servernameEN = "trial",
+        servernameCN = "高速试用线路",
+        routeStarttime =1593532800000,
+        trafficLimit = -1,
+        trafficUsed = 0,
+        trafficResetDay = "1",
+        usergroup_id = 2
+    )
+    route3 = RouteModel(
+        id = 3,
+        sequence = 1,
+        online = True,
+        domain = "do1n.thchroute.club",
+        ipaddress = "do1n.thchroute.club",
+        servernameEN = "Singapore",
+        servernameCN = "新加坡",
+        routeStarttime =1593532800000,
+        trafficLimit = -1,
+        trafficUsed = 0,
+        trafficResetDay = "1",
+        usergroup_id = 3
+    )
+    db.session.add(route1)
+    db.session.add(route2)
+    db.session.add(route3)
+    db.session.commit()
+
     return {
-        "message":"init success"
+        "message":"init success, use /usergroups/refill/1 to refill pwresources"
     }
 
 
