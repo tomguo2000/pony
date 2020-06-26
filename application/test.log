@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-26-06-2020 09:43:42 werkzeug:WARNING: * Debugger is active!
-26-06-2020 09:43:42 werkzeug:INFO: * Debugger PIN: 186-693-928
-=======
-26-06-2020 09:41:42 werkzeug:WARNING: * Debugger is active!
-26-06-2020 09:41:42 werkzeug:INFO: * Debugger PIN: 186-693-928
-26-06-2020 09:41:46 werkzeug:INFO:127.0.0.1 - - [26/Jun/2020 09:41:46] "[37mPOST /login HTTP/1.1[0m" 200 -
->>>>>>> initdata
+26-06-2020 09:48:05 werkzeug:WARNING: * Debugger is active!
+26-06-2020 09:48:05 werkzeug:INFO: * Debugger PIN: 186-693-928
+26-06-2020 09:48:19 werkzeu26-06-2020 16:57:59 werkzeug:INFO: * Restarting with stat
+gin HTTP/1.1[0m" 200 -
+26-06-2020 09:48:24 werkzeug:INFO:127.0.0.1 - - [26/Jun/2020 09:48:24] "[37mGET /users/2 HTTP/1.1[0m" 200 -
+26-06-2020 09:48:28 werkzeug:INFO:127.0.0.1 - - [26/Jun/2020 09:48:28] "[37mPOST /login HTTP/1.1[0m" 200 -
+26-06-2020 16:57:59 werkzeug:INFO: * Detected change in '/Users/guoliang/PycharmProjects/pony/application/app.py', reloading

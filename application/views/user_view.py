@@ -136,23 +136,25 @@ class GetUsersView(BaseView):
     def process(self):
         pageNum = request.args.get('pageNum', 1, type=int)
         pageSize = request.args.get('pageSize', 10, type=int)
+        logging.info("GetUsersView. pageNum:{},pageSize:{}".format(pageNum,pageSize))
 
         totals = UserService.get_user_amount()
         totalPages = (totals + pageSize -1 ) // pageSize
-        print("userAmount:", totals,totalPages)
         users = UserService.get_users(pageNum,pageSize)
         usersview = list()
         for user in users:
+            # print (user)  #(<UserModel 1>, <ThunderserviceModel 1>)
             usersview.append({
-                'user_id': user.id,
-                'user_register_source': user.register_source,
-                'user_email': user.email,
-                'user_email_verified': user.email_verified,
-                'user_register_datetime': user.register_datetime,
-                'user_thunderservice': user.thunderservice_id,
-                'user_usergroup': user.usergroup_id,
-                'user_account_status': user.account_status,
-                'user_service_endtime': user.thunderservice_endtime
+                'user_id': user.UserModel.id,
+                'user_register_source': user.UserModel.register_source,
+                'user_email': user.UserModel.email,
+                'user_email_verified': user.UserModel.email_verified,
+                'user_register_datetime': user.UserModel.register_datetime,
+                'user_thunderservice': user.UserModel.thunderservice_id,
+                'user_usergroup': user.UserModel.usergroup_id,
+                'user_account_status': user.UserModel.account_status,
+                'user_service_endtime': user.UserModel.thunderservice_endtime,
+                'user_thunderservice_name': user.ThunderserviceModel.membershipCN
             })
         return {
             "code":200,
@@ -229,6 +231,8 @@ class UserLoginView(BaseView):
     def process(self):
         user_body = self.parameters.get('body')
         user = UserService.get_user_by_email(user_body['email'])
+
+        logging.info ("UserLoginView,email:{}".format(user_body['email']))
         if not user:
             return {
                 "code":4001,
@@ -237,8 +241,6 @@ class UserLoginView(BaseView):
 
         # if (user_body['password'] == user['password']):
         if user.check_password(user_body['password']):
-            # token = jwt.encode({'user_id':user['id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
-            # refreshToken = jwt.encode({'user_id':user['id'], 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
             token = jwt.encode({'user_id':user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
             refreshToken = jwt.encode({'user_id':user.id, 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
             UserService.save_token(user.id,token,refreshToken)
@@ -249,6 +251,7 @@ class UserLoginView(BaseView):
                 thunderservice_password = pwresource.oripassword
             else:
                 thunderservice_password = 'glnvod'     #万一没有，就拿这个顶
+                logging.info("UserLoginView. This user :{} do not have thunderservice password, use reserved insteed".format(user_body['email']))
 
             routes = RouteService.get_routes_by_group_ID(user.usergroup_id)
             routes_info = list()
@@ -278,10 +281,6 @@ class UserLoginView(BaseView):
                         "thunderservice_id":user.thunderservice_id,
                         "thunderservice_endtime":user.thunderservice_endtime,
                         "usergroup_id":user.usergroup_id
-
-                    },
-                    "pwresource":{
-                        "thunderservice_password":thunderservice_password
                     },
                     "routes":routes_info,
                     "credential":{

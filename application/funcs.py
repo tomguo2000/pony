@@ -47,7 +47,6 @@ def get_user(current_user,user_id, flag):
         return {
                    "code":4006,
                    "message": returncode['4006'],
-                   "data":{}
                },401
     from application.views.user_view import GetUserView
     return GetUserView(locals()).as_view()
@@ -111,7 +110,7 @@ def init():
         email_verified = True,
         account_status = "ACCOUNT_ACTIVED",
         register_source = 'INIT',
-        register_datetime = time.time()
+        register_datetime = time.time()*1000
     )
     user.set_password(user.password)
     db.session.add(user)

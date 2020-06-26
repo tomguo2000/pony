@@ -1,5 +1,6 @@
 from .base_service import BaseService
 from application.models.user_model import UserModel
+from application.models.thunderservice_model import ThunderserviceModel
 from application.models.pwresources_model import PWResourcesModel
 from application.common.foundation import db
 import logging
@@ -24,7 +25,8 @@ class UserService(BaseService):
 
     @staticmethod
     def get_users(pageNum,pageSize):
-        users = UserModel.query.filter().limit(pageSize).offset((pageNum-1)*pageSize)
+        # users = UserModel.query.filter().limit(pageSize).offset((pageNum-1)*pageSize)
+        users = db.session.query(UserModel,ThunderserviceModel).join(ThunderserviceModel, UserModel.thunderservice_id==ThunderserviceModel.id).filter().limit(pageSize).offset((pageNum-1)*pageSize)
         return users
 
     @staticmethod
