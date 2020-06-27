@@ -208,9 +208,12 @@ class AddUserView(BaseView):
                 "code":4010,
                 "message": returncode['4010'],
             } ,400
-
-        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'),user_body.get('source'),time.time()*1000)
+        logging.info("AddUserView. {}".format(user_body))
+        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'),
+                             user_body.get('source'),user_body.get('email_verified'),time.time()*1000)
         db.session.commit()
+        if not user_body['email_verified']:
+            logging.error("email_verified false, So we need send an verify email to {}".format(user_body['email']))
 
         #get user service info again, active it.
         user = UserService.get_user_by_email(user_body.get('email'))

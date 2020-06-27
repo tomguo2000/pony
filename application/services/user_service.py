@@ -35,13 +35,13 @@ class UserService(BaseService):
         return user if user else None
 
     @staticmethod
-    def add_user(user_name,user_email,user_password,register_source,register_datetime):
+    def add_user(user_name,user_email,user_password,register_source,email_verified,register_datetime):
         from application.common.dict import thunder_service_ID
         user = UserModel(
             name = user_name,
             email = user_email,
             password = user_password,
-            email_verified = False,
+            email_verified = email_verified,
             account_status = "ACCOUNT_ACTIVED",
             register_datetime = register_datetime,
             register_source = register_source,

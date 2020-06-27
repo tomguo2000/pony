@@ -14,14 +14,14 @@ components:
       required:
         - email
       properties:
-        name:
-          type: string
         email:
           type: string
         password:
           type: string
-        source:
+        register_source:
           type: string
+        email_verified:
+          type: boolean
     UserGroups:
       type: object
       required:

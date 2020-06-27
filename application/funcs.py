@@ -85,11 +85,10 @@ def user_login(body):
 
 @token_required
 def add_user(current_user,body):
-    if not current_user or not current_user.admin:   #只有admin可以操作
+    if not current_user.admin:   #只有admin可以操作
         return {
                     "code":4007,
-                   "message": returncode['4007'],
-                    "businessObj":{}
+                    "message": returncode['4007'],
                },401
     from application.views.user_view import AddUserView
     return AddUserView(locals()).as_view()
