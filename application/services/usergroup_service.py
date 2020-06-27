@@ -23,17 +23,18 @@ class UserGroupService(BaseService):
         }
 
     @staticmethod
-    def get_allusergroup():
+    def get_allusergroup(thunderservice_id):
         usergroups = UserGroupModel.query.all()
-        results = list()
+        results = []
         for row in usergroups:
-            results.append({
-                'id':row.id,
-                'group_name':row.group_name,
-                'maxcapacity':row.maxcapacity,
-                'current_capacity':row.current_capacity,
-                'which_service':row.which_service
-            })
+            if str(thunderservice_id) in row.which_thunderservice.split(","):
+                results.append({
+                    'usergroup_id':row.id,
+                    'group_name':row.group_name,
+                    'maxcapacity':row.maxcapacity,
+                    'current_used':row.current_used,
+                    'which_thunderservice':row.which_thunderservice
+                })
         return results
 
 
@@ -83,9 +84,9 @@ class UserGroupService(BaseService):
     @staticmethod
     def decrease(usergroup_id):
         usergroup_data = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
-        usergroup_data.current_capacity -=1
+        usergroup_data.current_used -=1
 
     @staticmethod
     def increase(usergroup_id):
         usergroup_data = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
-        usergroup_data.current_capacity +=1
+        usergroup_data.current_used +=1

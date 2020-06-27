@@ -15,8 +15,12 @@ class UserService(BaseService):
     @staticmethod
     def get_user(user_id):
         user = UserModel.query.filter(UserModel.id == user_id).first()
-        return user.__dict__ if user else None
+        return user if user else None
 
+    @staticmethod
+    def get_user_afflist(user_id):
+        user = UserModel.query.filter(UserModel.mentor == user_id).all()
+        return user if user else None
 
     @staticmethod
     def get_user_service_password(user_id):
@@ -37,6 +41,10 @@ class UserService(BaseService):
     @staticmethod
     def add_user(user_name,user_email,user_password,register_source,email_verified,register_datetime):
         from application.common.dict import thunder_service_ID
+        from application.models.thunderservice_model import ThunderserviceModel
+        thunderservice = ThunderserviceModel.query.filter(ThunderserviceModel.id == thunder_service_ID["LOW_SPEED"]).first()
+        thunderservice_client_amount = thunderservice.defaultClientAmount
+        thunderservice_traffic_amount = thunderservice.defaultTrafficAmount
         user = UserModel(
             name = user_name,
             email = user_email,
@@ -46,6 +54,8 @@ class UserService(BaseService):
             register_datetime = register_datetime,
             register_source = register_source,
             thunderservice_id = thunder_service_ID["LOW_SPEED"],
+            thunderservice_client_amount = thunderservice_client_amount,
+            thunderservice_traffic_amount = thunderservice_traffic_amount,
             thunderservice_starttime = register_datetime,
             thunderservice_endtime = 4102367245000
         )
@@ -87,11 +97,11 @@ class UserService(BaseService):
 
         logging.info ("active thunderservice: userid={},thunderservice_id={},thunderservice_starttime={},thunderservice_endtime={}".format(user_id,thunderservice_id,thunderservice_starttime,thunderservice_endtime))
         #Step1：按照已经分配的thunderservice找到可用的usergroup（usergroup的assined没有满）
-        usergroups = UserGroupModel.query.filter(UserGroupModel.maxcapacity>UserGroupModel.current_capacity).all()
+        usergroups = UserGroupModel.query.filter(UserGroupModel.maxcapacity>UserGroupModel.current_used).all()
         available=[]
         for row in usergroups:
             if str(thunderservice_id) in (row.which_thunderservice.split(",")):
-                temp = [row.current_capacity / row.maxcapacity, row.id]
+                temp = [row.current_used / row.maxcapacity, row.id]
                 available.append(temp)
         available.sort()
         usergroup = available[0][1]

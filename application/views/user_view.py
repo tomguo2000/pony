@@ -9,32 +9,60 @@ from application.common.returncode import returncode
 import logging
 import jwt
 import datetime,time
-
+from application.common.dict import thunder_service_name
 """
 each class is for one API
 """
 
 
 class GetUserView(BaseView):
-
     def process(self):
+        logging.info("GetUserView. {}".format(self.parameters))
         self.other_function()
         user_id = self.parameters.get('user_id')
         user_info = UserService.get_user(user_id)
         if (user_info):
-            return {
-                'id': user_info.get('id'),
-                'name': user_info.get('name'),
-                'account_status': user_info.get('account_status'),
-                'register_source': user_info.get('register_source'),
-                'email': user_info.get('email'),
-                'email_verified': user_info.get('email_verified'),
-                'usergroup_id': user_info.get('usergroup_id'),
-                'thunderservice_id':user_info.get('thunderservice_id'),
-                'service_starttime': user_info.get('service_starttime'),
-                'service_endtime': user_info.get('service_endtime')
+            user_info1= {
+                'id': user_info.id,
+                'email': user_info.email,
+                'email_verified': user_info.email_verified,
+                'account_status': user_info.account_status,
+                'register_source': user_info.register_source,
+                'register_datetime': user_info.register_datetime,
+                'last_login_datetime':user_info.last_login_datetime,
+                'last_login_ipaddress':user_info.last_login_ipaddress,
+                'affiliate':user_info.affiliate,
+                'affiliate_url':"TBD",
+                'individual_coupon':user_info.individual_coupon,
+                'mentor':user_info.mentor
             }
-        return 'None',400
+
+            user_aff_list=[]
+            if user_info.affiliate:
+                user_aff_users = UserService.get_user_afflist(user_id)
+                logging.info("UserSerice.get_user_afflist: {}".format(user_aff_users))
+                if user_aff_users:
+                    for user in user_aff_users:
+                        temp={
+                            "user_id":user.id,
+                            "email":user.email,
+                            "register_datetime":user.register_datetime,
+                            "thunderservice_id":user.thunderservice_id,
+                            "thunderservice_endtime":user.thunderservice_endtime
+                        }
+                        user_aff_list.append(temp)
+
+            return {
+                "code":200,
+                "message":"get user info success",
+                "userInfo":user_info1,
+                "userAff":user_aff_list
+            }
+        return{
+            "code":4011,
+            "message": returncode['4011']
+        } ,400
+
 
     def other_function(self):
         pass
@@ -46,21 +74,30 @@ class GetUserServiceView(BaseView):
         self.other_function()
         user_id = self.parameters.get('user_id')
         user_info = UserService.get_user(user_id)
-        user_service_password = UserService.get_user_service_password(user_id)
-        route_info = RouteService.get_routes_by_group_ID(user_info.get('usergroup'))
+        thunderservice_password = UserService.get_user_service_password(user_id)
+        route_info = RouteService.get_routes_by_group_ID(user_info.usergroup_id)
+        logging.info ("route_info:{}".format(route_info))
         if (user_info):
+            user_service_info = {
+                'user_id': user_info.id,
+                'thunderservice_id': user_info.thunderservice_id,
+                'thunderservice_name': thunder_service_name[str(user_info.thunderservice_id)],
+                'thunderservice_starttime': user_info.thunderservice_starttime,
+                'thunderservice_endtime': user_info.thunderservice_endtime,
+                'usergroup_id': user_info.usergroup_id,
+                'thunderservice_oripassword': thunderservice_password.oripassword,
+                'client_amount':user_info.thunderservice_client_amount,
+                'traffic_amount':user_info.thunderservice_traffic_amount,
+                'up_traffic_used':user_info.thunderservice_up_traffic_used,
+                'down_traffic_used':user_info.thunderservice_down_traffic_used
+            }
+
+
+
             return {
-                'user_id': user_info.get('id'),
-                'user_name': user_info.get('name'),
-                'user_email': user_info.get('email'),
-                'user_password': user_info.get('password11'),
-                'user_usergroup': user_info.get('usergroup'),
-                'user_membership': user_info.get('membership'),
-                'user_membership_starttime': user_info.get('membership_starttime'),
-                'user_membership_endtime': user_info.get('membership_endtime'),
-                'user_service_oripassword': user_service_password.get('oripassword'),
-                'user_service_hashedpassword': user_service_password.get('hashedpassword'),
-                'route_info':route_info
+                "code":200,
+                "message":"get user service success",
+                "userServiceInfo":user_service_info
             }
         return 'None',400
 
@@ -265,13 +302,14 @@ class UserLoginView(BaseView):
                     'sequence': route.sequence,
                     'online': route.online,
                     'domain': route.domain,
-                    'ipaddress': route.ipaddress,
+                    'port': route.port,
+                    # 'ipaddress': route.ipaddress,
                     'servernameEN': route.servernameEN,
                     'servernameCN': route.servernameCN,
-                    'routeStarttime': route.routeStarttime,
-                    'trafficLimit': route.trafficLimit,
-                    'trafficUsed': route.trafficUsed,
-                    'trafficResetDay': route.trafficResetDay,
+                    # 'routeStarttime': route.routeStarttime,
+                    # 'trafficLimit': route.trafficLimit,
+                    # 'trafficUsed': route.trafficUsed,
+                    # 'trafficResetDay': route.trafficResetDay,
                     'password':thunderservice_password
                 })
 

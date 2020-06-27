@@ -117,7 +117,7 @@ def init():
 
     usergroup1 = UserGroupModel(
         id = 1,
-        group_name = "LOW_SPEED",
+        group_name = "低速线路",
         maxcapacity = 30,
         current_capacity = 0,
         which_thunderservice = "1"
@@ -145,30 +145,40 @@ def init():
         id = 1,
         membershipCN = "普通会员",
         membershipEN = "membership",
+        defaultClientAmount = 1,
+        defaultTrafficAmount = -1,
         price = 0
     )
     thunderservice2 = ThunderserviceModel(
         id = 2,
         membershipCN = "体验会员",
         membershipEN = "trial",
+        defaultClientAmount = 1,
+        defaultTrafficAmount = -1,
         price = 0
     )
     thunderservice3 = ThunderserviceModel(
         id = 3,
         membershipCN = "银牌会员",
         membershipEN = "silver",
+        defaultClientAmount = 1,
+        defaultTrafficAmount = -1,
         price = 4.99
     )
     thunderservice4 = ThunderserviceModel(
         id = 4,
         membershipCN = "金牌会员",
         membershipEN = "golden",
+        defaultClientAmount = 3,
+        defaultTrafficAmount = -1,
         price = 49.99
     )
     thunderservice5 = ThunderserviceModel(
         id = 5,
         membershipCN = "铂金会员",
         membershipEN = "platinum",
+        defaultClientAmount = 3,
+        defaultTrafficAmount = -1,
         price = 89.99
     )
     db.session.add(thunderservice1)
@@ -184,6 +194,7 @@ def init():
         online = True,
         domain = "free6.thchroute.club",
         ipaddress = "free6.thchroute.club",
+        port = 443,
         servernameEN = "low_speed_route6",
         servernameCN = "低速线路6",
         routeStarttime =1593532800000,
@@ -198,6 +209,7 @@ def init():
         online = True,
         domain = "trial.thchroute.club",
         ipaddress = "trial.thchroute.club",
+        port = 443,
         servernameEN = "trial",
         servernameCN = "高速试用线路",
         routeStarttime =1593532800000,
@@ -212,6 +224,7 @@ def init():
         online = True,
         domain = "do1n.thchroute.club",
         ipaddress = "do1n.thchroute.club",
+        port = 443,
         servernameEN = "Singapore",
         servernameCN = "新加坡",
         routeStarttime =1593532800000,
@@ -234,7 +247,7 @@ def get_usergroup(usergroup_id, flag):
     from application.views.usergroup_view import GetUserGroupView
     return GetUserGroupView(locals()).as_view()
 
-def get_all_usergroup():
+def get_all_usergroup(thunderservice):
     from application.views.usergroup_view import GetAllUserGroupView
     return GetAllUserGroupView(locals()).as_view()
 

@@ -10,4 +10,5 @@ returncode={
     "4006":"Token is not yours!",
     "4007":"Administrator only!",
     "4010":"This email already registed",
+    "4011":"No user find",
 }

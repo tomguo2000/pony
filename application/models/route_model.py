@@ -9,6 +9,7 @@ class RouteModel(db.Model):
     online = db.Column(db.Boolean)
     domain = db.Column(db.String(100), nullable=True)
     ipaddress = db.Column(db.String(15), nullable=True)
+    port = db.Column(db.Integer, nullable=True)
     servernameEN = db.Column(db.String(100), nullable=True)
     servernameCN = db.Column(db.String(100), nullable=True)
     routeStarttime = db.Column(db.BigInteger)

@@ -7,3 +7,10 @@ thunder_service_ID = {
     "TRIAL":"2",
     "FUFEI":"3,4,5"
 }
+thunder_service_name = {
+    "1":"普通会员",
+    "2":"体验会员",
+    "3":"银牌会员",
+    "4":"金牌会员",
+    "5":"铂金会员"
+}
