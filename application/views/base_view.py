@@ -1,4 +1,5 @@
 import logging
+from flask import request
 from application.common.exceptions import UserError
 logger = logging.getLogger(__name__)
 
@@ -6,6 +7,10 @@ logger = logging.getLogger(__name__)
 class BaseView(object):
     def __init__(self, parameters=None):
         self.parameters = parameters
+        print(request)
+        print(request.remote_addr)
+        # print(request.headers)
+        # print(request._cached_json)
 
     def process(self):
         raise NotImplemented()

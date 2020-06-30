@@ -75,7 +75,13 @@ def delete_user(user_id, flag):
     from application.views.user_view import DeleteUserView
     return DeleteUserView(locals()).as_view()
 
-def modify_user_by_id(user_id,body):
+@token_required
+def modify_user_by_id(current_user,user_id,body):
+    if not current_user.admin:   #只有admin可以操作
+        return {
+                   "code":4007,
+                   "message": returncode['4007'],
+               },401
     from application.views.user_view import ModifyUserViewByID
     return ModifyUserViewByID(locals()).as_view()
 
@@ -119,21 +125,21 @@ def init():
         id = 1,
         group_name = "低速线路",
         maxcapacity = 30,
-        current_capacity = 0,
+        current_used = 0,
         which_thunderservice = "1"
     )
     usergroup2 = UserGroupModel(
         id = 2,
         group_name = "TRIAL",
         maxcapacity = 30,
-        current_capacity = 0,
+        current_used = 0,
         which_thunderservice = "2"
     )
     usergroup3 = UserGroupModel(
         id = 3,
         group_name = "FUFEI1",
         maxcapacity = 30,
-        current_capacity = 0,
+        current_used = 0,
         which_thunderservice = "3,4,5"
     )
     db.session.add(usergroup1)

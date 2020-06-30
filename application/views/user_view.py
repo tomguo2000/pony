@@ -23,7 +23,7 @@ class GetUserView(BaseView):
         user_info = UserService.get_user(user_id)
         if (user_info):
             user_info1= {
-                'id': user_info.id,
+                'user_id': user_info.id,
                 'email': user_info.email,
                 'email_verified': user_info.email_verified,
                 'account_status': user_info.account_status,
@@ -86,10 +86,10 @@ class GetUserServiceView(BaseView):
                 'thunderservice_endtime': user_info.thunderservice_endtime,
                 'usergroup_id': user_info.usergroup_id,
                 'thunderservice_oripassword': thunderservice_password.oripassword,
-                'client_amount':user_info.thunderservice_client_amount,
-                'traffic_amount':user_info.thunderservice_traffic_amount,
-                'up_traffic_used':user_info.thunderservice_up_traffic_used,
-                'down_traffic_used':user_info.thunderservice_down_traffic_used
+                'thunderservice_client_amount':user_info.thunderservice_client_amount,
+                'thunderservice_traffic_amount':user_info.thunderservice_traffic_amount,
+                'thunderservice_up_traffic_used':user_info.thunderservice_up_traffic_used,
+                'thunderservice_down_traffic_used':user_info.thunderservice_down_traffic_used
             }
 
 
@@ -209,19 +209,39 @@ class DeleteUserView(BaseView):
         return "success"
 
 class ModifyUserViewByID(BaseView):
-
     def process(self):
         user_body = self.parameters.get('body')
         user_id = self.parameters.get('user_id')
-        user_current_data = UserService.get_user(user_id)
-        if user_current_data:
+        current_userdata = UserService.get_user(user_id)
+        if current_userdata:
             if user_body.get('id'):
-                return "Id can not be modify",400
+                return {
+                    "code":4012,
+                    "message":returncode['4012']
+                },400
+            logging.info("ModifyUserViewByID. UserService.modify_user_by_id:{}{}".format(user_id,user_body))
+            if user_body.get('usergroup_id'):
+                if current_userdata.usergroup_id != user_body.get('usergroup_id'):
+                    old_usergroup_id = current_userdata.usergroup_id
+                    new_usergroup_id = user_body.get('usergroup_id')
+                    logging.info("UserID:{},need change usergroup_id from {} to {}".format(user_id,old_usergroup_id,new_usergroup_id))
+                    UserService.delete_assigned_pwd(user_id)
+                    UserGroupService.decrease(old_usergroup_id)
+                    UserService.assign_new_pwd(user_id,new_usergroup_id)
+                    UserGroupService.increase(new_usergroup_id)
+
             UserService.modify_user_by_id(user_id,user_body)
             db.session.commit()
-            return "modify user success"
+            return {
+                "code":200,
+                "message":"modify user success"
+            }
+
         else:
-            return "user not exist",400
+            return {
+                "code":4011,
+                "message":returncode['4011']
+            },400
 
 # class ModifyUserView(BaseView):
 #

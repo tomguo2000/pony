@@ -11,4 +11,5 @@ returncode={
     "4007":"Administrator only!",
     "4010":"This email already registed",
     "4011":"No user find",
+    "4012":"ID can not be modify",
 }

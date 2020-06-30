@@ -57,7 +57,8 @@ class UserService(BaseService):
             thunderservice_client_amount = thunderservice_client_amount,
             thunderservice_traffic_amount = thunderservice_traffic_amount,
             thunderservice_starttime = register_datetime,
-            thunderservice_endtime = 4102367245000
+            thunderservice_endtime = 4102367245000,
+            affiliate = False
         )
         user.set_password(user.password)
         db.session.add(user)
@@ -76,12 +77,12 @@ class UserService(BaseService):
 
     @staticmethod
     def delete_assigned_pwd(user_id):
-        PWResourcesModel.query.filter(PWResourcesModel.uid == user_id).delete()
+        PWResourcesModel.query.filter(PWResourcesModel.user_id == user_id).delete()
 
     @staticmethod
     def assign_new_pwd(user_id,usergroup_id):
-        pwd_data = PWResourcesModel.query.filter(PWResourcesModel.group_id == usergroup_id).filter(PWResourcesModel.uid == None).first()
-        pwd_data.uid = user_id
+        pwd_data = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id == usergroup_id).filter(PWResourcesModel.user_id == None).first()
+        pwd_data.user_id = user_id
 
     @staticmethod
     def save_token(user_id,token,refreshToken):
