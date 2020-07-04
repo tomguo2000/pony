@@ -15,7 +15,7 @@ class RouteService(BaseService):
         for route in routes:
             routes_info.append({
                 'id': route.id,
-                'group_id': route.group_id,
+                'group_id': route.usergroup_id,
                 'sequence': route.sequence,
                 'online': route.online,
                 'domain': route.domain,

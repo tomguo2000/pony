@@ -30,7 +30,7 @@ from application.models.pwresources_model import PWResourcesModel
 from application.models.route_model import RouteModel
 from application.models.thunderservice_model import ThunderserviceModel
 from application.models.usergroup_model import UserGroupModel
-from application.models.logs_model import LogsModel
+from application.models.tracking_model import LogsModel
 
 def create_app():
     app = connexion.FlaskApp(__name__, specification_dir='openapi/')

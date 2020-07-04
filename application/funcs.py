@@ -248,6 +248,9 @@ def init():
         "message":"init success, use /usergroups/refill/1 to refill pwresources"
     }
 
+def search_tracking(body):
+    from application.views.admin_view import searchTrackingView
+    return searchTrackingView(locals()).as_view()
 
 def get_usergroup(usergroup_id, flag):
     from application.views.usergroup_view import GetUserGroupView

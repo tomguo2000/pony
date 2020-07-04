@@ -75,6 +75,38 @@ components:
 
 paths:
 
+  /tracking:
+    post:
+      tags:
+        - tracking
+      summary: tracking user's action
+      operationId: application.funcs.search_tracking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pager:
+                  type: object
+                  properties:
+                    pageNum:
+                      type: integer
+                    pageSize:
+                      type: integer
+                searchData:
+                  type: object
+                  properties:
+                    userID:
+                      type: integer
+                    content:
+                      type: string
+                    result:
+                      type: string
+      responses:
+        "200":
+          description: success
+
   /init:
     get:
       tags:

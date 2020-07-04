@@ -2,15 +2,16 @@ from .base_view import BaseView
 from application.services.user_service import UserService
 from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
-from application.services.logs_service import LogsService
+from application.services.tracking_service import TrackingService
 from application.common.foundation import db
 from application.app import flask_app
 from flask import request
 from application.common.returncode import returncode
 import logging
 import jwt
-import datetime,time
+import datetime, time
 from application.common.dict import thunder_service_name
+
 """
 each class is for one API
 """
@@ -23,47 +24,46 @@ class GetUserView(BaseView):
         user_id = self.parameters.get('user_id')
         user_info = UserService.get_user(user_id)
         if (user_info):
-            user_info1= {
+            user_info1 = {
                 'user_id': user_info.id,
                 'email': user_info.email,
                 'email_verified': user_info.email_verified,
                 'account_status': user_info.account_status,
                 'register_source': user_info.register_source,
                 'register_datetime': user_info.register_datetime,
-                'last_login_datetime':user_info.last_login_datetime,
-                'last_login_ipaddress':user_info.last_login_ipaddress,
-                'affiliate':user_info.affiliate,
-                'affiliate_url':"TBD",
-                'individual_coupon':user_info.individual_coupon,
-                'mentor':user_info.mentor
+                'last_login_datetime': user_info.last_login_datetime,
+                'last_login_ipaddress': user_info.last_login_ipaddress,
+                'affiliate': user_info.affiliate,
+                'affiliate_url': "TBD",
+                'individual_coupon': user_info.individual_coupon,
+                'mentor': user_info.mentor
             }
 
-            user_aff_list=[]
+            user_aff_list = []
             if user_info.affiliate:
                 user_aff_users = UserService.get_user_afflist(user_id)
                 logging.info("UserSerice.get_user_afflist: {}".format(user_aff_users))
                 if user_aff_users:
                     for user in user_aff_users:
-                        temp={
-                            "user_id":user.id,
-                            "email":user.email,
-                            "register_datetime":user.register_datetime,
-                            "thunderservice_id":user.thunderservice_id,
-                            "thunderservice_endtime":user.thunderservice_endtime
+                        temp = {
+                            "user_id": user.id,
+                            "email": user.email,
+                            "register_datetime": user.register_datetime,
+                            "thunderservice_id": user.thunderservice_id,
+                            "thunderservice_endtime": user.thunderservice_endtime
                         }
                         user_aff_list.append(temp)
 
             return {
-                "code":200,
-                "message":"get user info success",
-                "userInfo":user_info1,
-                "userAff":user_aff_list
+                "code": 200,
+                "message": "get user info success",
+                "userInfo": user_info1,
+                "userAff": user_aff_list
             }
-        return{
-            "code":4011,
-            "message": returncode['4011']
-        } ,400
-
+        return {
+                   "code": 4011,
+                   "message": returncode['4011']
+               }, 400
 
     def other_function(self):
         pass
@@ -77,8 +77,23 @@ class GetUserServiceView(BaseView):
         user_info = UserService.get_user(user_id)
         thunderservice_password = UserService.get_user_service_password(user_id)
         route_info = RouteService.get_routes_by_group_ID(user_info.usergroup_id)
-        logging.info ("route_info:{}".format(route_info))
+        logging.info("route_info:{}".format(route_info))
         if (user_info):
+
+            routes = list()
+            for route in route_info:
+                routes.append({
+                    "id": route.id,
+                    "usergroup_id": route.usergroup_id,
+                    "sequence": route.sequence,
+                    "online": route.online,
+                    "domain": route.domain,
+                    "port": route.port,
+                    "servernameEN": route.servernameEN,
+                    "servernameCN": route.servernameCN,
+                    "password": thunderservice_password.oripassword
+                })
+
             user_service_info = {
                 'user_id': user_info.id,
                 'thunderservice_id': user_info.thunderservice_id,
@@ -87,24 +102,22 @@ class GetUserServiceView(BaseView):
                 'thunderservice_endtime': user_info.thunderservice_endtime,
                 'usergroup_id': user_info.usergroup_id,
                 'thunderservice_oripassword': thunderservice_password.oripassword,
-                'thunderservice_client_amount':user_info.thunderservice_client_amount,
-                'thunderservice_traffic_amount':user_info.thunderservice_traffic_amount,
-                'thunderservice_up_traffic_used':user_info.thunderservice_up_traffic_used,
-                'thunderservice_down_traffic_used':user_info.thunderservice_down_traffic_used
+                'thunderservice_client_amount': user_info.thunderservice_client_amount,
+                'thunderservice_traffic_amount': user_info.thunderservice_traffic_amount,
+                'thunderservice_up_traffic_used': user_info.thunderservice_up_traffic_used,
+                'thunderservice_down_traffic_used': user_info.thunderservice_down_traffic_used,
+                "routes": routes
             }
-
-
 
             return {
-                "code":200,
-                "message":"get user service success",
-                "userServiceInfo":user_service_info
+                "code": 200,
+                "message": "get user service success",
+                "userServiceInfo": user_service_info
             }
-        return 'None',400
+        return 'None', 400
 
     def other_function(self):
         pass
-
 
 
 class ActiveUserServiceView(BaseView):
@@ -116,69 +129,67 @@ class ActiveUserServiceView(BaseView):
         service_start_date = user_body.get('service_start_date')
         service_end_date = user_body.get('service_end_date')
         update_data = {
-            "membership":thunderservice_id,
-            "membership_starttime":service_start_date,
-            "membership_endtime":service_end_date
+            "membership": thunderservice_id,
+            "membership_starttime": service_start_date,
+            "membership_endtime": service_end_date
         }
         user_data = UserService.get_user(user_id)
 
-        #same membership level, update period only
-        if user_data.get('membership')==thunderservice_id:
-            UserService.modify_user_by_id(user_id,update_data)
+        # same membership level, update period only
+        if user_data.get('membership') == thunderservice_id:
+            UserService.modify_user_by_id(user_id, update_data)
             db.session.commit()
             return {
-                'result':"User already have same service, modify date only. success"
+                'result': "User already have same service, modify date only. success"
             }
 
-        #change membership level, delete old pwd and assign a new one
+        # change membership level, delete old pwd and assign a new one
         new_usergroup_id = self.choose_best_usergroup(thunderservice_id)
-        print ("new_usergroup_id:",new_usergroup_id)
+        print("new_usergroup_id:", new_usergroup_id)
 
         UserService.delete_assigned_pwd(user_id)
         UserGroupService.decrease(user_data.get('usergroup'))
         update_data = {
-            "usergroup":new_usergroup_id,
-            "membership":thunderservice_id,
-            "membership_starttime":service_start_date,
-            "membership_endtime":service_end_date
+            "usergroup": new_usergroup_id,
+            "membership": thunderservice_id,
+            "membership_starttime": service_start_date,
+            "membership_endtime": service_end_date
         }
-        UserService.modify_user_by_id(user_id,update_data)
+        UserService.modify_user_by_id(user_id, update_data)
 
-
-
-        UserService.assign_new_pwd(user_id,new_usergroup_id)
+        UserService.assign_new_pwd(user_id, new_usergroup_id)
         UserGroupService.increase(new_usergroup_id)
 
         db.session.commit()
         return {
-            'result':"Active thunderservice success"
+            'result': "Active thunderservice success"
         }
-    def choose_best_usergroup(self,thunderservice_id):
+
+    def choose_best_usergroup(self, thunderservice_id):
         data = UserGroupService.get_allusergroup()
-        group_list=[]
+        group_list = []
         for row in data:
             if thunderservice_id in row.get('which_service'):
-                temp = row.get('current_capacity')/row.get('maxcapacity'),row.get('id')
+                temp = row.get('current_capacity') / row.get('maxcapacity'), row.get('id')
                 group_list.append(temp)
-                print (row)
+                print(row)
 
-        group_list.sort(reverse = True)
+        group_list.sort(reverse=True)
         if group_list:
             return group_list.pop()[1]
         else:
             return None
 
 
-
 class GetUsersView(BaseView):
     def process(self):
         pageNum = request.args.get('pageNum', 1, type=int)
         pageSize = request.args.get('pageSize', 10, type=int)
-        logging.info("GetUsersView. pageNum:{},pageSize:{}".format(pageNum,pageSize))
+        logging.info("GetUsersView. pageNum:{},pageSize:{}".format(pageNum, pageSize))
 
-        totals = UserService.get_user_amount() -1
-        totalPages = (totals + pageSize -1 ) // pageSize
-        users = UserService.get_users(pageNum,pageSize)
+        totals = UserService.get_user_amount() - 1
+        totalPages = (totals + pageSize - 1) // pageSize
+        users = UserService.get_users(pageNum, pageSize)
         usersview = list()
         for user in users:
             # print (user)  #(<UserModel 1>, <ThunderserviceModel 1>)
@@ -195,19 +206,21 @@ class GetUsersView(BaseView):
                 'user_thunderservice_name': user.ThunderserviceModel.membershipCN
             })
         return {
-            "code":200,
-            "message":"get users success",
-            "results":{
+            "code": 200,
+            "message": "get users success",
+            "results": {
                 "totals": totals,
-                "totalPages":totalPages,
-                "list":usersview
+                "totalPages": totalPages,
+                "list": usersview
             }
         }
+
 
 class DeleteUserView(BaseView):
 
     def process(self):
         return "success"
+
 
 class ModifyUserViewByID(BaseView):
     def process(self):
@@ -217,32 +230,34 @@ class ModifyUserViewByID(BaseView):
         if current_userdata:
             if user_body.get('id'):
                 return {
-                    "code":4012,
-                    "message":returncode['4012']
-                },400
-            logging.info("ModifyUserViewByID. UserService.modify_user_by_id:{}{}".format(user_id,user_body))
+                           "code": 4012,
+                           "message": returncode['4012']
+                       }, 400
+            logging.info("ModifyUserViewByID. UserService.modify_user_by_id:{}{}".format(user_id, user_body))
             if user_body.get('usergroup_id'):
                 if current_userdata.usergroup_id != user_body.get('usergroup_id'):
                     old_usergroup_id = current_userdata.usergroup_id
                     new_usergroup_id = user_body.get('usergroup_id')
-                    logging.info("UserID:{},need change usergroup_id from {} to {}".format(user_id,old_usergroup_id,new_usergroup_id))
+                    logging.info("UserID:{},need change usergroup_id from {} to {}".format(user_id, old_usergroup_id,
+                                                                                           new_usergroup_id))
                     UserService.delete_assigned_pwd(user_id)
                     UserGroupService.decrease(old_usergroup_id)
-                    UserService.assign_new_pwd(user_id,new_usergroup_id)
+                    UserService.assign_new_pwd(user_id, new_usergroup_id)
                     UserGroupService.increase(new_usergroup_id)
 
-            UserService.modify_user_by_id(user_id,user_body)
+            UserService.modify_user_by_id(user_id, user_body)
             db.session.commit()
             return {
-                "code":200,
-                "message":"modify user success"
+                "code": 200,
+                "message": "modify user success"
             }
 
         else:
             return {
-                "code":4011,
-                "message":returncode['4011']
-            },400
+                       "code": 4011,
+                       "message": returncode['4011']
+                   }, 400
+
 
 # class ModifyUserView(BaseView):
 #
@@ -263,67 +278,75 @@ class AddUserView(BaseView):
 
         if self.check_registed_user_by_email(user_body.get('email')):
             return {
-                "code":4010,
-                "message": returncode['4010'],
-            } ,400
+                       "code": 4010,
+                       "message": returncode['4010'],
+                   }, 400
         logging.info("AddUserView. {}".format(user_body))
-        UserService.add_user(user_body.get('name'),user_body.get('email'),user_body.get('password'),
-                             user_body.get('source'),user_body.get('email_verified'),time.time()*1000)
+        UserService.add_user(user_body.get('name'), user_body.get('email'), user_body.get('password'),
+                             user_body.get('source'), user_body.get('email_verified'), time.time() * 1000)
         db.session.commit()
         if not user_body['email_verified']:
             logging.error("email_verified false, So we need send an verify email to {}".format(user_body['email']))
 
-        #get user service info again, active it.
+        # get user service info again, active it.
         user = UserService.get_user_by_email(user_body.get('email'))
-        UserService.active_thunderservice(user.id,user.thunderservice_id,user.thunderservice_starttime,user.thunderservice_endtime)
+        UserService.active_thunderservice(user.id, user.thunderservice_id, user.thunderservice_starttime,
+                                          user.thunderservice_endtime)
         db.session.commit()
 
         return {
-            "code":200,
-            "message":"add user success",
+            "code": 200,
+            "message": "add user success",
         }
 
-    def check_registed_user_by_email(self,user_email):
+    def check_registed_user_by_email(self, user_email):
         if UserService.get_user_by_email(user_email):
             return True
 
 
 class UserLoginView(BaseView):
     def process(self):
-        print("1",time.time()*1000)
+        trackinginput = self.parameters.get('body')
+        print("1", time.time() * 1000)
         user_body = self.parameters.get('body')
         user = UserService.get_user_by_email(user_body['email'])
 
-        print("2",time.time()*1000)
+        print("2", time.time() * 1000)
 
-        logging.info ("UserLoginView,email:{}".format(user_body['email']))
+        logging.info("UserLoginView,email:{}".format(user_body['email']))
         if not user:
             return {
-                "code":4001,
-                "message": returncode['4001'],
-            },401
+                       "code": 4001,
+                       "message": returncode['4001'],
+                   }, 401
 
         if (user_body['password'] == user.password):
-        # if user.check_password(user_body['password']):
-            print("3",time.time()*1000)
-            token = jwt.encode({'user_id':user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
-            refreshToken = jwt.encode({'user_id':user.id, 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
-            UserService.save_token(user.id,token,refreshToken)
+            # if user.check_password(user_body['password']):
+            print("3", time.time() * 1000)
+            token = jwt.encode(
+                {'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000)},
+                flask_app.config['SECRET_KEY'])
+            refreshToken = jwt.encode({'user_id': user.id, 'type': 'refresh',
+                                       'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400)},
+                                      flask_app.config['SECRET_KEY'])
+            UserService.save_token(user.id, token, refreshToken)
             db.session.commit()
-            print("4",time.time()*1000)
+            print("4", time.time() * 1000)
 
             pwresource = UserService.get_user_service_password(user.id)
             if pwresource:
                 thunderservice_password = pwresource.oripassword
             else:
-                thunderservice_password = 'glnvod'     #万一没有，就拿这个顶
-                logging.info("UserLoginView. This user :{} do not have thunderservice password, use reserved insteed".format(user_body['email']))
+                thunderservice_password = 'glnvod'  # 万一没有，就拿这个顶
+                logging.info(
+                    "UserLoginView. This user :{} do not have thunderservice password, use reserved insteed".format(
+                        user_body['email']))
 
-            print("5",time.time()*1000)
+            print("5", time.time() * 1000)
 
             routes = RouteService.get_routes_by_group_ID(user.usergroup_id)
 
-            print("6",time.time()*1000)
+            print("6", time.time() * 1000)
 
             routes_info = list()
             for route in routes:
@@ -341,36 +364,35 @@ class UserLoginView(BaseView):
                     # 'trafficLimit': route.trafficLimit,
                     # 'trafficUsed': route.trafficUsed,
                     # 'trafficResetDay': route.trafficResetDay,
-                    'password':thunderservice_password
+                    'password': thunderservice_password
                 })
-            print("7",time.time()*1000)
-            LogsService.logging(user_body,user.id)
-            print("8",time.time()*1000)
+            print("7", time.time() * 1000)
+            trackingoutput = "成功"
+            TrackingService.tracking(trackinginput,trackingoutput, user.id)
+            print("8", time.time() * 1000)
             return {
-                "code":200,
-                "message":"login success",
-                "results":{
-                    "user":{
-                        "user_id":user.id,
-                        "thunderservice_id":user.thunderservice_id,
-                        "thunderservice_endtime":user.thunderservice_endtime,
-                        "usergroup_id":user.usergroup_id
+                "code": 200,
+                "message": "login success",
+                "results": {
+                    "user": {
+                        "user_id": user.id,
+                        "thunderservice_id": user.thunderservice_id,
+                        "thunderservice_endtime": user.thunderservice_endtime,
+                        "usergroup_id": user.usergroup_id
                     },
-                    "routes":routes_info,
-                    "credential":{
-                        "token" : token.decode('UTF-8'),
-                        "refreshToken":refreshToken.decode('UTF-8')
+                    "routes": routes_info,
+                    "credential": {
+                        "token": token.decode('UTF-8'),
+                        "refreshToken": refreshToken.decode('UTF-8')
                     }
                 }
             }
 
         return {
-            "code":4002,
-            "message": returncode['4002'],
-        },401
+                   "code": 4002,
+                   "message": returncode['4002'],
+               }, 401
 
-
-
-    def check_registed_user_by_email(self,user_email):
+    def check_registed_user_by_email(self, user_email):
         if UserService.get_user_by_email(user_email):
             return True
