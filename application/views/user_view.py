@@ -2,6 +2,7 @@ from .base_view import BaseView
 from application.services.user_service import UserService
 from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
+from application.services.logs_service import LogsService
 from application.common.foundation import db
 from application.app import flask_app
 from flask import request
@@ -175,7 +176,7 @@ class GetUsersView(BaseView):
         pageSize = request.args.get('pageSize', 10, type=int)
         logging.info("GetUsersView. pageNum:{},pageSize:{}".format(pageNum,pageSize))
 
-        totals = UserService.get_user_amount()
+        totals = UserService.get_user_amount() -1
         totalPages = (totals + pageSize -1 ) // pageSize
         users = UserService.get_users(pageNum,pageSize)
         usersview = list()
@@ -289,8 +290,11 @@ class AddUserView(BaseView):
 
 class UserLoginView(BaseView):
     def process(self):
+        print("1",time.time()*1000)
         user_body = self.parameters.get('body')
         user = UserService.get_user_by_email(user_body['email'])
+
+        print("2",time.time()*1000)
 
         logging.info ("UserLoginView,email:{}".format(user_body['email']))
         if not user:
@@ -299,12 +303,14 @@ class UserLoginView(BaseView):
                 "message": returncode['4001'],
             },401
 
-        # if (user_body['password'] == user['password']):
-        if user.check_password(user_body['password']):
+        if (user_body['password'] == user.password):
+        # if user.check_password(user_body['password']):
+            print("3",time.time()*1000)
             token = jwt.encode({'user_id':user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000) },flask_app.config['SECRET_KEY'])
             refreshToken = jwt.encode({'user_id':user.id, 'type':'refresh','exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=14400) },flask_app.config['SECRET_KEY'])
             UserService.save_token(user.id,token,refreshToken)
             db.session.commit()
+            print("4",time.time()*1000)
 
             pwresource = UserService.get_user_service_password(user.id)
             if pwresource:
@@ -313,7 +319,12 @@ class UserLoginView(BaseView):
                 thunderservice_password = 'glnvod'     #万一没有，就拿这个顶
                 logging.info("UserLoginView. This user :{} do not have thunderservice password, use reserved insteed".format(user_body['email']))
 
+            print("5",time.time()*1000)
+
             routes = RouteService.get_routes_by_group_ID(user.usergroup_id)
+
+            print("6",time.time()*1000)
+
             routes_info = list()
             for route in routes:
                 routes_info.append({
@@ -332,7 +343,9 @@ class UserLoginView(BaseView):
                     # 'trafficResetDay': route.trafficResetDay,
                     'password':thunderservice_password
                 })
-
+            print("7",time.time()*1000)
+            LogsService.logging(user_body,user.id)
+            print("8",time.time()*1000)
             return {
                 "code":200,
                 "message":"login success",

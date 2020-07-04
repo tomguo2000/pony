@@ -6,7 +6,7 @@ class LogsModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     logtime = db.Column(db.String(50), nullable=True)
     content = db.Column(db.String(1024), nullable=True)
-    result =  db.Column(db.String(1024), nullable=True)
+    user_id =  db.Column(db.Integer)
     remote_ip = db.Column(db.String(15), nullable=True)
 
     # def set_password(self, password):
