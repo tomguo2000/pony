@@ -37,27 +37,71 @@ def token_required(f):
                        "data":{}
                    },401
 
-        return f(current_user, *args, **kwargs)
+        if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401
+            return {
+                       "code":4006,
+                       "message": returncode['4006'],
+                   },401
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+def admin_token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
+
+        if not token:
+            return {
+                       "code":4003,
+                       "message": returncode['4003'],
+                       "data":{}
+                   },401
+
+        try:
+            data = jwt.decode(token, config.settings.SECRET_KEY)
+            current_user = UserModel.query.filter(UserModel.id == data['user_id']).first()
+        except:
+            return {
+                       "code":4004,
+                       "message": returncode['4004'],
+                       "data":{}
+                   },401
+
+        if current_user.token != token:
+            return {
+                       "code":4005,
+                       "message": returncode['4005'],
+                       "data":{}
+                   },401
+
+        if not current_user or not current_user.admin:   #只有admin可以操作，如果token对应的账户不存在，不会出错
+            return {
+                       "code":4007,
+                       "message": returncode['4007'],
+                       "data":{}
+                   },401
+
+        return f(*args, **kwargs)
 
     return decorated
 
 @token_required
-def get_user(current_user,user_id, flag):
-    if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401
-        return {
-                   "code":4006,
-                   "message": returncode['4006'],
-               },401
+def get_user(user_id, flag):
     from application.views.user_view import GetUserView
     return GetUserView(locals()).as_view()
 
 @token_required
-def get_user_order(current_user,user_id, flag):
+def get_user_order(user_id, flag):
     from application.views.user_view import GetUserOrderView
     return GetUserOrderView(locals()).as_view()
 
 @token_required
-def get_user_service(current_user,user_id, flag):
+def get_user_service(user_id, flag):
     from application.views.user_view import GetUserServiceView
     return GetUserServiceView(locals()).as_view()
 
@@ -65,14 +109,8 @@ def active_user_service(body, flag):
     from application.views.user_view import ActiveUserServiceView
     return ActiveUserServiceView(locals()).as_view()
 
-@token_required
-def get_users(current_user):
-    if not current_user or not current_user.admin:   #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def get_users():
     from application.views.user_view import GetUsersView
     return GetUsersView(locals()).as_view()
 
@@ -80,13 +118,8 @@ def delete_user(user_id, flag):
     from application.views.user_view import DeleteUserView
     return DeleteUserView(locals()).as_view()
 
-@token_required
-def modify_user_by_id(current_user,user_id,body):
-    if not current_user or not current_user.admin:   #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-               },401
+@admin_token_required
+def modify_user_by_id(user_id,body):
     from application.views.user_view import ModifyUserViewByID
     return ModifyUserViewByID(locals()).as_view()
 
@@ -94,88 +127,43 @@ def user_login(body):
     from application.views.user_view import UserLoginView
     return UserLoginView(locals()).as_view()
 
-@token_required
-def add_user(current_user,body):
-    if not current_user or not current_user.admin:   #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                    "code":4007,
-                    "message": returncode['4007'],
-               },401
+@admin_token_required
+def add_user(body):
     from application.views.user_view import AddUserView
     return AddUserView(locals()).as_view()
 
-@token_required
-def add_order(current_user,body):
-    if not current_user or not current_user.admin:   #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-               },401
+@admin_token_required
+def add_order(body):
     from application.views.order_view import AddOrderView
     return AddOrderView(locals()).as_view()
 
-@token_required
-def get_orders(current_user):
-    if not current_user or not current_user.admin:  #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def get_orders():
     from application.views.order_view import GetOrdersView
     return GetOrdersView(locals()).as_view()
 
 @token_required
-def get_order(current_user,order_id, flag):
-    if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401
-        return {
-                   "code":4006,
-                   "message": returncode['4006'],
-               },401
+def get_order(order_id, flag):
     from application.views.order_view import GetOrderView
     return GetOrderView(locals()).as_view()
 
-@token_required
-def fulfill_order(current_user,order_id):
-    if not current_user or not current_user.admin:  #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def fulfill_order(order_id):
     from application.views.order_view import FulfillOrderView
     return FulfillOrderView(locals()).as_view()
 
-@token_required
-def mark_order_paid(current_user,order_id):
-    if not current_user or not current_user.admin:  #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def mark_order_paid(order_id):
     from application.views.order_view import MarkOrderPaidView
     return MarkOrderPaidView(locals()).as_view()
 
-@token_required
-def cancel_order_by_order_id(current_user,order_id):
-    if not current_user or not current_user.admin:  #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def cancel_order_by_order_id(order_id):
     from application.views.order_view import CancelOrderView
     return CancelOrderView(locals()).as_view()
 
-@token_required
-def delete_order(current_user,order_id):
-    if not current_user or not current_user.admin:  #只有admin可以操作，如果token对应的账户不存在，不会出错
-        return {
-                   "code":4007,
-                   "message": returncode['4007'],
-                   "data":{}
-               },401
+@admin_token_required
+def delete_order(order_id):
     from application.views.order_view import DeleteOrderView
     return DeleteOrderView(locals()).as_view()
 
