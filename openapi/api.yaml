@@ -72,6 +72,31 @@ components:
           type: string
           format: date
           description: 服务结束日期
+    Orders:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        thunderservice_id:
+          type: integer
+        placeOrderTime:
+          type: integer
+        coupon:
+          type: string
+        paymentMethod:
+          type: string
+        paymentTime:
+          type: integer
+        paymentSN:
+          type: string
+        emailNotification:
+          type: boolean
+        amount:
+          type: string
+        orderStatus:
+          type: string
+        thunderserviceStatus:
+          type: string
 
 paths:
 
@@ -241,6 +266,32 @@ paths:
       responses:
         "200":
           description: Success
+
+  "/users/orders/{user_id}":
+    get:
+      tags:
+        - user
+        - resource
+      operationId: application.funcs.get_user_order
+      summary: Get User' Order
+      parameters:
+        - name: user_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Success
+
 
   /users/service:
     post:
@@ -570,3 +621,171 @@ paths:
       responses:
         "200":
           description: Success
+
+  /orders:
+    get:
+      tags:
+        - orders
+      summary: get all orders
+      operationId: application.funcs.get_orders
+      responses:
+        "200":
+          description: Success
+    post:
+      tags:
+        - orders
+      summary: Add a order
+      operationId: application.funcs.add_order
+      parameters:
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Routes"
+        required: true
+      responses:
+        "200":
+          description: success
+  "/orders/fulfill/{order_id}":
+    get:
+      tags:
+        - ordes
+      operationId: application.funcs.fulfill_order
+      summary: mark order finished and active thunderservice
+      parameters:
+        - name: order_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Success
+  "/orders/paid/{order_id}":
+    get:
+      tags:
+        - ordes
+      operationId: application.funcs.mark_order_paid
+      summary: mark order as paid
+      parameters:
+        - name: order_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Success
+  "/orders/cancel/{order_id}":
+    get:
+      tags:
+        - orders
+      operationId: application.funcs.cancel_order_by_order_id
+      summary: Cancel order by order ID
+      parameters:
+        - name: order_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Success
+  "/orders/{order_id}":
+    get:
+      tags:
+        - orders
+      operationId: application.funcs.get_order
+      summary: Get order by order_id
+      parameters:
+        - name: order_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Success
+#    put:
+#      tags:
+#        - orders
+#      summary: Modify a order by id
+#      operationId: application.funcs.modify_order_by_id
+#      parameters:
+#        - name: order_id
+#          in: path
+#          description: path arg
+#          required: true
+#          schema:
+#            type: integer
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Orders"
+#      responses:
+#        "200":
+#          description: success
+    delete:
+      tags:
+        - orders
+      operationId: application.funcs.delete_order
+      summary: Remove a order
+      parameters:
+        - name: order_id
+          in: path
+          description: path arg
+          required: true
+          schema:
+            type: integer
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "204":
+          description: route was deleted
+        "404":
+          description: route does not exist

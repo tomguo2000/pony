@@ -119,6 +119,37 @@ class GetUserServiceView(BaseView):
     def other_function(self):
         pass
 
+class GetUserOrderView(BaseView):
+
+    def process(self):
+        from application.services.order_service import OrderService
+        self.other_function()
+        user_id = self.parameters.get('user_id')
+        user_orders = UserService.get_user_order(user_id)
+        # logging.info("route_info:{}".format(route_info))
+        if (user_orders):
+
+            orders = list()
+            for order in user_orders:
+                orders.append({
+                    "id": order.id,
+                    "placeOrderTime": order.placeOrderTime,
+                    "paymentMethod": order.paymentMethod,
+                    "paymentTime": order.paymentTime,
+                    "paymentSN": order.paymentSN,
+                    "amount": order.amount,
+                    "orderStatus": order.orderStatus,
+                })
+
+            return {
+                "code": 200,
+                "message": "get user orders success",
+                "userOrdersInfo": orders
+            }
+        return 'None', 400
+
+    def other_function(self):
+        pass
 
 class ActiveUserServiceView(BaseView):
 

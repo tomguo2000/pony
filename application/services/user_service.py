@@ -2,6 +2,7 @@ from .base_service import BaseService
 from application.models.user_model import UserModel
 from application.models.thunderservice_model import ThunderserviceModel
 from application.models.pwresources_model import PWResourcesModel
+from application.models.order_model import OrderModel
 from application.common.foundation import db
 import logging
 
@@ -10,7 +11,7 @@ class UserService(BaseService):
     @staticmethod
     def get_user_amount():
         userAmount = UserModel.query.filter().count()
-        return userAmount if userAmount else None
+        return userAmount if userAmount else 0
 
     @staticmethod
     def get_user(user_id):
@@ -26,6 +27,11 @@ class UserService(BaseService):
     def get_user_service_password(user_id):
         user_service_password = PWResourcesModel.query.filter(PWResourcesModel.user_id == user_id).first()
         return user_service_password if user_service_password else None
+
+    @staticmethod
+    def get_user_order(user_id):
+        user_order = OrderModel.query.filter(OrderModel.user_id == user_id).all()
+        return user_order if user_order else None
 
     @staticmethod
     def get_users(pageNum,pageSize):

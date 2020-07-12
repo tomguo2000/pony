@@ -15,8 +15,12 @@ thunder_service_name = {
     "5":"铂金会员"
 }
 
-payment_status = {
+orderStatus = {
     "1":"未支付",
     "2":"支付成功",
-    "3":"已退款"
+    "3":"已取消"
+}
+
+thunderserviceStatus = {
+    "1":"对应服务已经开通"
 }

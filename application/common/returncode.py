@@ -12,4 +12,9 @@ returncode={
     "4010":"This email already registed",
     "4011":"No user find",
     "4012":"ID can not be modify",
+    "4013":"No order ID find",
+    "4014":"This order already fulfilled",
+    "4015":"Fulfilled order can not be cancel",
+    "4016":"Order must be paid",
+
 }
