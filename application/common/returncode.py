@@ -19,4 +19,5 @@ returncode={
     "4017":"No route ID find",
     "4018":"Unknown remote command",
     "4019":"Remote command send ERROR",
+    "5001":"DB ERROR,Please try later",
 }

@@ -193,6 +193,8 @@ class RouteRemoteControl(BaseView):
         route_body = self.parameters.get('body')
         print(route_body)
         route_info = RouteService.get_route(route_body.get('route_id'))
+        print (route_info)
+
         if not route_info:
             return {
                 "code":4017,
@@ -225,9 +227,9 @@ class RouteRemoteControl(BaseView):
             # SIGN= hashlib.md5((newIP+str(timestamp)+RESKEY).encode(encoding='UTF-8')).hexdigest()
             # body = {"newIP": newIP, "timestamp":timestamp,"sign": SIGN}
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(5.0)
             s.connect((ipaddress, TCP_PORT))
             s.send(message.encode())
-            s.settimeout(5.0)
             data = s.recv(BUFFER_SIZE)
             print(data)
             s.close()
