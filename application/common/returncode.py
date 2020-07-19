@@ -16,5 +16,7 @@ returncode={
     "4014":"This order already fulfilled",
     "4015":"Fulfilled order can not be cancel",
     "4016":"Order must be paid",
-
+    "4017":"No route ID find",
+    "4018":"Unknown remote command",
+    "4019":"Remote command send ERROR",
 }

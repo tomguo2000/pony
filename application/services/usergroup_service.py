@@ -26,17 +26,39 @@ class UserGroupService(BaseService):
     def get_allusergroup(thunderservice_id):
         usergroups = UserGroupModel.query.all()
         results = []
+        print (usergroups)
+        print (thunderservice_id)
+        if thunderservice_id == 0:
+            for row in usergroups:
+                results.append({
+                    'usergroup_id':row.id,
+                    'group_name':row.group_name,
+                })
+            return {
+                "code":200,
+                "message":"get all usergroups success",
+                "results":{
+                    "list":results
+                }
+            }
+
         for row in usergroups:
             if str(thunderservice_id) in row.which_thunderservice.split(","):
                 results.append({
                     'usergroup_id':row.id,
                     'group_name':row.group_name,
-                    'maxcapacity':row.maxcapacity,
+                    'maxUserCapacity':row.maxUserCapacity,
+                    'maxPwdCapacity':row.maxPwdCapacity,
                     'current_used':row.current_used,
                     'which_thunderservice':row.which_thunderservice
                 })
-        return results
-
+        return {
+            "code":200,
+            "message":"get usergroup success",
+            "results":{
+                "list":results
+            }
+        }
 
     @staticmethod
     def add_usergroup(usergroup_data):

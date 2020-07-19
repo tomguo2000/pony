@@ -1,33 +1,35 @@
 from .base_service import BaseService
 from application.models.route_model import RouteModel
+from application.models.usergroup_model import UserGroupModel
 from application.common.foundation import db
 
 class RouteService(BaseService):
+    @staticmethod
+    def get_route_amount(usergroup_ids):
+        if usergroup_ids == []:
+            routeAmount = RouteModel.query.filter().count()
+        else:
+            routeAmount = RouteModel.query.filter(RouteModel.usergroup_id.in_(usergroup_ids)).count()
+        return routeAmount if routeAmount else 0
+
     @staticmethod
     def get_route(route_id):
         route = RouteModel.query.filter(RouteModel.id == route_id).first()
         return route.__dict__ if route else None
 
     @staticmethod
-    def get_routes():
-        routes = RouteModel.query.all()
-        routes_info = list()
-        for route in routes:
-            routes_info.append({
-                'id': route.id,
-                'group_id': route.usergroup_id,
-                'sequence': route.sequence,
-                'online': route.online,
-                'domain': route.domain,
-                'ipaddress': route.ipaddress,
-                'servernameEN': route.servernameEN,
-                'servernameCN': route.servernameCN,
-                'routeStarttime': route.routeStarttime,
-                'trafficLimit': route.trafficLimit,
-                'trafficUsed': route.trafficUsed,
-                'trafficResetDay': route.trafficResetDay
-            })
-        return routes_info
+    def get_routes(usergroup_ids,pageNum,pageSize):
+        if usergroup_ids == []:
+            pass
+            # routes = RouteModel.query.filter().limit(pageSize).offset((pageNum-1)*pageSize)
+            routes = db.session.query(RouteModel,UserGroupModel).join(UserGroupModel,RouteModel.usergroup_id == UserGroupModel.id).\
+                filter().limit(pageSize).offset((pageNum-1)*pageSize)
+        else:
+            # routes = RouteModel.query.filter(RouteModel.usergroup_id.in_(usergroup_ids)).limit(pageSize).offset((pageNum-1)*pageSize)
+            routes = db.session.query(RouteModel,UserGroupModel).join(UserGroupModel,RouteModel.usergroup_id == UserGroupModel.id). \
+                filter(RouteModel.usergroup_id.in_(usergroup_ids)).limit(pageSize).offset((pageNum-1)*pageSize)
+
+        return routes
 
     @staticmethod
     def get_routes_by_group_ID(group_id):
@@ -44,7 +46,7 @@ class RouteService(BaseService):
         #         'ipaddress': route.ipaddress,
         #         'servernameEN': route.servernameEN,
         #         'servernameCN': route.servernameCN,
-        #         'routeStarttime': route.routeStarttime,
+        #         'routeStartTime': route.routeStartTime,
         #         'trafficLimit': route.trafficLimit,
         #         'trafficUsed': route.trafficUsed,
         #         'trafficResetDay': route.trafficResetDay

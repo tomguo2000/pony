@@ -194,21 +194,24 @@ def init():
     usergroup1 = UserGroupModel(
         id = 1,
         group_name = "低速线路",
-        maxcapacity = 30,
+        maxUserCapacity = 30,
+        maxPwdCapacity = 100,
         current_used = 0,
         which_thunderservice = "1"
     )
     usergroup2 = UserGroupModel(
         id = 2,
         group_name = "TRIAL",
-        maxcapacity = 30,
+        maxUserCapacity = 30,
+        maxPwdCapacity = 100,
         current_used = 0,
         which_thunderservice = "2"
     )
     usergroup3 = UserGroupModel(
         id = 3,
         group_name = "FUFEI1",
-        maxcapacity = 30,
+        maxUserCapacity = 30,
+        maxPwdCapacity = 100,
         current_used = 0,
         which_thunderservice = "3,4,5"
     )
@@ -273,8 +276,8 @@ def init():
         port = 443,
         servernameEN = "low_speed_route6",
         servernameCN = "低速线路6",
-        routeStarttime =1593532800000,
-        trafficLimit = -1,
+        routeStartTime =1593532800000,
+        trafficLimit = 9000,
         trafficUsed = 0,
         trafficResetDay = "1",
         usergroup_id = 1
@@ -288,8 +291,8 @@ def init():
         port = 443,
         servernameEN = "trial",
         servernameCN = "高速试用线路",
-        routeStarttime =1593532800000,
-        trafficLimit = -1,
+        routeStartTime =1593532800000,
+        trafficLimit = 9000,
         trafficUsed = 0,
         trafficResetDay = "1",
         usergroup_id = 2
@@ -303,8 +306,8 @@ def init():
         port = 443,
         servernameEN = "Singapore",
         servernameCN = "新加坡",
-        routeStarttime =1593532800000,
-        trafficLimit = -1,
+        routeStartTime =1593532800000,
+        trafficLimit = 2000,
         trafficUsed = 0,
         trafficResetDay = "1",
         usergroup_id = 3
@@ -374,3 +377,11 @@ def get_routes_by_group_id(group_id):
 def push_route(route_id, flag):
     from application.views.route_view import PushRouteView
     return PushRouteView(locals()).as_view()
+
+def route_dynamic_data(route_id, flag):
+    from application.views.route_view import DynamicRouteView
+    return DynamicRouteView(locals()).as_view()
+
+def route_remotecontrol(body):
+    from application.views.route_view import RouteRemoteControl
+    return RouteRemoteControl(locals()).as_view()

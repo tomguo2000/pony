@@ -34,12 +34,12 @@ components:
     Routes:
       type: object
       properties:
-        group_id:
+        usergroup_id:
           type: integer
         sequence:
           type: integer
         online:
-          type: integer
+          type: boolean
         domain:
           type: string
         ipaddress:
@@ -598,12 +598,36 @@ paths:
           description: route was deleted
         "404":
           description: route does not exist
-  "/routes/push/{route_id}":
+  "/routes/remotecontrol":
+    post:
+      tags:
+        - route
+      operationId: application.funcs.route_remotecontrol
+      summary: Route remotecontrol
+#      parameters:
+#        - name: flag
+#          in: query
+#          description: url arg
+#          required: false
+#          schema:
+#            type: integer
+#            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: Success
+
+  "/routes/dynamic/{route_id}":
     get:
       tags:
         - route
-      operationId: application.funcs.push_route
-      summary: Push route to sync data once
+      operationId: application.funcs.route_dynamic_data
+      summary: Get route's dynamic data
       parameters:
         - name: route_id
           in: path

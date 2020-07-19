@@ -30,7 +30,8 @@ class GetUserGroupView(BaseView):
             return {
                 'usergroup_id': usergroup_info.get('id'),
                 'group_name': usergroup_info.get('group_name'),
-                'maxcapacity': usergroup_info.get('maxcapacity'),
+                'maxUserCapacity': usergroup_info.get('maxUserCapacity'),
+                'maxPwdCapacity': usergroup_info.get('maxPwdCapacity'),
                 'current_used': usergroup_info.get('current_used'),
                 'which_thunderservice':usergroup_info.get('which_thunderservice')
             }
@@ -60,7 +61,7 @@ class ModifyUserGroupView(BaseView):
         usergroup_id = self.parameters.get('usergroup_id')
         usergroup_current_data = UserGroupService.get_usergroup(usergroup_id)
         if usergroup_current_data:
-            if usergroup_current_data.get('current_used') > usergroup_body.get('maxcapacity'):
+            if usergroup_current_data.get('current_used') > usergroup_body.get('maxUserCapacity'):
                 return "maxcapacity too low, this usergroup already have "+str(usergroup_current_data.get('current_used'))+"users",400
             if usergroup_body.get('id'):
                 return "id can not be modify",400
@@ -92,11 +93,12 @@ class RefillUserGroupView(BaseView):
         usergroup_reality = UserGroupService.get_usergroup_reality(usergroup_id)
 
         if usergroup_data:
-            refill_count = usergroup_data.get('maxcapacity') - usergroup_reality.get('pwd_count')
-            print ("maxcapacity:",usergroup_data.get('maxcapacity'))
+            refill_count = usergroup_data.get('maxUserCapacity') - usergroup_reality.get('pwd_count')
+            print ("maxUserCapacity:",usergroup_data.get('maxUserCapacity'))
             print ("pwd_count:",usergroup_reality.get('pwd_count'))
             UserGroupService.refill(usergroup_id,refill_count)
             db.session.commit()
             return "user group refilled success"
         else:
             return "user group not exist",400
+
