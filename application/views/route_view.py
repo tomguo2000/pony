@@ -2,6 +2,7 @@ from .base_view import BaseView
 from application.services.route_service import RouteService
 from application.common.foundation import db
 from application.common.returncode import returncode
+from application.common.dict import commandList
 from flask import request
 import logging
 
@@ -43,7 +44,6 @@ class GetRoutesView(BaseView):
                 'ipaddress': route.RouteModel.ipaddress,
                 'ipv6': route.RouteModel.ipv6,
                 'trojanVersion': route.RouteModel.trojanVersion,
-                'onlineUserAmount': route.RouteModel.onlineUserAmount,
                 'current_used': route.UserGroupModel.current_used,
                 'maxUserCapacity': route.UserGroupModel.maxUserCapacity,
                 'maxPwdCapacity': route.UserGroupModel.maxPwdCapacity,
@@ -100,7 +100,10 @@ class GetRouteView(BaseView):
                     'sequence': route_info.get('sequence'),
                     'trafficLimit': route_info.get('trafficLimit'),
                     'routeExpTime': route_info.get('routeExpTime'),
-                    'trafficResetDay': route_info.get('trafficResetDay')
+                    'trafficResetDay': route_info.get('trafficResetDay'),
+                    'trojanVersion': route_info.get('trojanVersion'),
+                    'certificateExpTime': route_info.get('certificateExpTime'),
+                    'availablePwd': route_info.get('availablePwd'),
                 }
             }
 
@@ -128,10 +131,7 @@ class ModifyRouteView(BaseView):
         route_current_data = RouteService.get_route(route_id)
         if route_current_data:
             if route_body.get('id'):
-                return {
-                    "code":4012,
-                    "message": returncode['4012']
-                },400
+                return {"code":4012,"message": returncode['4012']},400
             RouteService.modify_route_by_id(route_id,route_body)
             db.session.commit()
             return {
@@ -139,10 +139,7 @@ class ModifyRouteView(BaseView):
                 "message":"Modify route success"
             }
         else:
-            return {
-                "code":4017,
-                "message":returncode['4017']
-            },400
+            return {"code":4017,"message":returncode['4017']},400
 
 
 class AddRouteView(BaseView):
@@ -175,65 +172,73 @@ class DynamicRouteView(BaseView):
         route_id = self.parameters.get('route_id')
         route_data = RouteService.get_route(route_id)
         if route_data:
-            pass
+            route_dynamic_data = RouteService.get_route_dynamic_data(route_data['ipaddress'])
             return {
                 "code":200,
                 "message":"Get dynamic route data success",
-                "results":"TBD"
+                "results":route_dynamic_data
             }
         else:
+            return {"code":4017,"message":returncode['4017']},400
+
+class UpdateDynamicRouteView(BaseView):
+    def process(self):
+        route_body = self.parameters.get('body')
+        route_ip = route_body.get('ipaddress')
+        route_current_data = RouteService.get_route_by_ip(route_ip)
+        if route_current_data:
+            RouteService.update_route_dynamic_data(route_body)
+            db.session.commit()
             return {
-                       "code":4017,
-                       "message":returncode['4017']
-                   },400
+                "code":200,
+                "message":"Update dymanic data success"
+            }
+        else:
+            return {"code":4017,"message":returncode['4017']},400
 
 class RouteRemoteControl(BaseView):
     def process(self):
-        commandList = ['reboot','checkTrojanVer','refreshCert']
-        route_body = self.parameters.get('body')
-        print(route_body)
-        route_info = RouteService.get_route(route_body.get('route_id'))
-        print (route_info)
+        cmd_body = self.parameters.get('body')
+        route_info = RouteService.get_route(cmd_body.get('route_id'))
 
         if not route_info:
-            return {
-                "code":4017,
-                "message":returncode['4017']
-            },400
-        if route_body.get('command') not in commandList:
-            return {
-               "code":4018,
-               "message":returncode['4018']
-            },400
-        pass
-        if self.remotecontrol(route_info.get('ipaddress') ,route_body.get('command')):
-            return {
-                "code":200,
-                "message":"Remote command sent success"
-            }
+            return {"code":4017,"message":returncode['4017']},400
+        if cmd_body.get('command') not in commandList:
+            return {"code":4018,"message":returncode['4018']},400
+
+        re = self.remotecontrol(route_info.get('ipaddress') ,cmd_body.get('command'))
+        if re:
+            if re == 'verifyerror':
+                return {"code":4020,"message":returncode['4020']},400
+            else:
+                return {"code":200,"message":"Remote command sent success","data":re}
         else:
-            return {
-                       "code":4019,
-                       "message":returncode['4019']
-            },400
+            return {"code":4019,"message":returncode['4019']},400
+
     def remotecontrol(self,ipaddress,command):
         import socket,time,json
         print(ipaddress,command)
         message = json.dumps({"command":command})
         TCP_PORT =8000
-        BUFFER_SIZE = 1024
+        BUFFER_SIZE = 4096
+
+        tcp_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_client.settimeout(10.0)
+
         try:
-            # timestamp=int(time.time())
-            # SIGN= hashlib.md5((newIP+str(timestamp)+RESKEY).encode(encoding='UTF-8')).hexdigest()
-            # body = {"newIP": newIP, "timestamp":timestamp,"sign": SIGN}
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(5.0)
-            s.connect((ipaddress, TCP_PORT))
-            s.send(message.encode())
-            data = s.recv(BUFFER_SIZE)
-            print(data)
-            s.close()
-            return True
+            tcp_client.connect((ipaddress, TCP_PORT))
         except:
-            print (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' ' +'Sending remotecontrol command error')
+            print ("socket connection error")
             return False
+
+        try:
+            print ("sending..........%s" %message)
+            tcp_client.send(message.encode())
+            re = tcp_client.recv(BUFFER_SIZE)
+            tcp_client.close()
+            return re.decode()
+        except:
+            print ("sending or get feedback error")
+            return False
+
+

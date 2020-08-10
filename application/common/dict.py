@@ -24,3 +24,7 @@ orderStatus = {
 thunderserviceStatus = {
     "1":"对应服务已经开通"
 }
+
+commandList = ['getTrojanVer','renewCert','clearDataStat','checkAll',
+               'restartTrojan','restartNginx','restartClient','runSpeedTest','getCertExpDate','getTrojanLog','getNginxLog',
+               'getClientLog','upgradePonyClient']

@@ -646,6 +646,23 @@ paths:
         "200":
           description: Success
 
+  "/routes/dynamic/dataupdate":
+    post:
+      tags:
+        - route
+      operationId: application.funcs.route_dynamic_dataupdate
+      summary: Update route's dynamic data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: Success
+
+
   /orders:
     get:
       tags:

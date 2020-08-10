@@ -382,6 +382,10 @@ def route_dynamic_data(route_id, flag):
     from application.views.route_view import DynamicRouteView
     return DynamicRouteView(locals()).as_view()
 
+def route_dynamic_dataupdate(body):
+    from application.views.route_view import UpdateDynamicRouteView
+    return UpdateDynamicRouteView(locals()).as_view()
+
 def route_remotecontrol(body):
     from application.views.route_view import RouteRemoteControl
     return RouteRemoteControl(locals()).as_view()
