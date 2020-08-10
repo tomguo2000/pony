@@ -279,6 +279,7 @@ def init():
         routeStartTime =1593532800000,
         trafficLimit = 9000,
         trafficUsed = 0,
+        trafficStartAt = 0,
         trafficResetDay = "1",
         usergroup_id = 1
     )
@@ -294,6 +295,7 @@ def init():
         routeStartTime =1593532800000,
         trafficLimit = 9000,
         trafficUsed = 0,
+        trafficStartAt = 0,
         trafficResetDay = "1",
         usergroup_id = 2
     )
@@ -309,6 +311,7 @@ def init():
         routeStartTime =1593532800000,
         trafficLimit = 2000,
         trafficUsed = 0,
+        trafficStartAt = 0,
         trafficResetDay = "1",
         usergroup_id = 3
     )
