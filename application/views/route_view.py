@@ -216,7 +216,7 @@ class RouteRemoteControl(BaseView):
             return {"code":4019,"message":returncode['4019']},400
 
     def remotecontrol(self,ipaddress,command):
-        import socket,time,json
+        import socket, json
         print(ipaddress,command)
         message = json.dumps({"command":command})
         TCP_PORT =8000

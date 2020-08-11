@@ -2,7 +2,8 @@
 
 import logging
 import connexion
-import os
+import os,sys
+sys.path.append('../')
 from application.common.foundation import db
 
 

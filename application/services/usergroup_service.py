@@ -3,7 +3,7 @@ from application.models.usergroup_model import UserGroupModel
 from application.models.pwresources_model import PWResourcesModel
 from application.models.route_model import RouteModel
 from application.common.foundation import db
-import logging
+
 
 class UserGroupService(BaseService):
     @staticmethod

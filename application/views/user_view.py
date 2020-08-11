@@ -122,7 +122,6 @@ class GetUserServiceView(BaseView):
 class GetUserOrderView(BaseView):
 
     def process(self):
-        from application.services.order_service import OrderService
         self.other_function()
         user_id = self.parameters.get('user_id')
         user_orders = UserService.get_user_order(user_id)

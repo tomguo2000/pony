@@ -9,7 +9,6 @@ from flask import request
 from application.common.returncode import returncode
 import logging
 import datetime, time
-from application.common.dict import thunder_service_name
 
 """
 each class is for one API

@@ -1,10 +1,6 @@
 from .base_service import BaseService
-from application.models.user_model import UserModel
-from application.models.thunderservice_model import ThunderserviceModel
 from application.models.order_model import OrderModel
-from application.models.tracking_model import TrackingModel
 from application.common.foundation import db
-import logging
 
 
 class OrderService(BaseService):
@@ -39,14 +35,12 @@ class OrderService(BaseService):
 
     @staticmethod
     def mark_paid_order(order_id):
-        from application.services.user_service import UserService
         order = OrderModel.query.filter(OrderModel.id == order_id).first()
         # mark order as paid
         order.orderStatus = '2'
 
     @staticmethod
     def mark_fulfilled(order_id):
-        from application.services.user_service import UserService
         order = OrderModel.query.filter(OrderModel.id == order_id).first()
         # mark order as fulfilled
         order.thunderserviceStatus = '1'

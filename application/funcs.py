@@ -174,7 +174,6 @@ def init():
     from application.models.usergroup_model import UserGroupModel
     from application.models.thunderservice_model import ThunderserviceModel
     from application.models.route_model import RouteModel
-    from application.services.usergroup_service import UserGroupService
     from application.common.foundation import db
     import time
     user = UserModel(
