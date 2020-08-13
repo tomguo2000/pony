@@ -3,7 +3,7 @@
 from env shell, run:
 
 python create_db.py db migrate -m "new"
-pyrhon create_db.py db upgrade
+python create_db.py db upgrade
 
 OR
 
