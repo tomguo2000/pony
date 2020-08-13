@@ -3,7 +3,7 @@
 from env shell, run:
 
 python create_db.py db migrate -m "new"
-pyrhon create_db.py db upgrade
+python create_db.py db upgrade
 
 OR
 
@@ -16,11 +16,25 @@ $ python create_db.py db stamp heads
 $ python create_db.py db migrate -m "new"
 $ python create_db.py db upgrade
 '''
+from flask import Flask
 import connexion
 import os
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from flask_sqlalchemy import SQLAlchemy
+from application.app import flask_app
 from application.common.foundation import db
+
+from application.models.user_model import UserModel
+from application.models.pwresources_model import PWResourcesModel
+from application.models.route_model import RouteModel
+from application.models.route_model import CpuIOModel,DiskIOModel,LoadAverageModel,NetworkModel,OnlineUserAmountModel
+from application.models.thunderservice_model import ThunderserviceModel
+from application.models.usergroup_model import UserGroupModel
+from application.models.tracking_model import TrackingModel
+from application.models.order_model import OrderModel
+from application.models.setting_model import SettingModel
+
 
 
 def create_app():
