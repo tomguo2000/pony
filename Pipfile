@@ -8,7 +8,6 @@ verify_ssl = true
 [packages]
 connexion = {extras = ["swagger-ui"],version = "*"}
 flask-sqlalchemy = "*"
-mysqlclient = "*"
 pycryptodome = "*"
 
 [requires]
