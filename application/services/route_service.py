@@ -19,6 +19,11 @@ class RouteService(BaseService):
         return route.__dict__ if route else None
 
     @staticmethod
+    def get_route_class(route_id):
+        route = RouteModel.query.filter(RouteModel.id == route_id).first()
+        return route if route else None
+
+    @staticmethod
     def get_route_by_ip(route_ip):
         route = RouteModel.query.filter(RouteModel.ipaddress == route_ip).first()
         return route.__dict__ if route else None

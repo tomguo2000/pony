@@ -199,18 +199,25 @@ class UpdateDynamicRouteView(BaseView):
 class RouteRemoteControl(BaseView):
     def process(self):
         cmd_body = self.parameters.get('body')
-        route_info = RouteService.get_route(cmd_body.get('route_id'))
+        route_class = RouteService.get_route_class(cmd_body.get('route_id'))
 
-        if not route_info:
+        if not route_class:
             return {"code":4017,"message":returncode['4017']},400
         if cmd_body.get('command') not in commandList:
             return {"code":4018,"message":returncode['4018']},400
 
-        re = self.remotecontrol(route_info.get('ipaddress') ,cmd_body.get('command'))
+        re = self.remotecontrol(route_class.ipaddress ,cmd_body.get('command'))
         if re:
             if re == 'verifyerror':
                 return {"code":4020,"message":returncode['4020']},400
             else:
+                if cmd_body.get('command') == 'getTrojanVer':
+                    route_class.trojanVersion = re
+                    db.session.commit()
+                if cmd_body.get('command') == 'getCertExpDate':
+                    route_class.certificateExpTime = re
+                    db.session.commit()
+
                 return {"code":200,"message":"Remote command sent success","data":re}
         else:
             return {"code":4019,"message":returncode['4019']},400

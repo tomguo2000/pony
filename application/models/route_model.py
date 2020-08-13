@@ -22,7 +22,7 @@ class RouteModel(db.Model):
     trafficResetDay = db.Column(db.BigInteger)
     usergroup_id = db.Column(db.Integer)
     lastCheckTime  = db.Column(db.BigInteger)
-    certificateExpTime = db.Column(db.BigInteger)
+    certificateExpTime = db.Column(db.String(50))
     availablePwd = db.Column(db.Integer)
     routeLocalTime = db.Column(db.String(50))
 
