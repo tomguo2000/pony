@@ -20,5 +20,7 @@ returncode={
     "4018":"Unknown remote command",
     "4019":"Remote command send ERROR",
     "4020":"Remote command verify ERROR",
+    "4021":"No setting ID find",
+    "4022":"Name or value is missed",
     "5001":"DB ERROR,Please try later",
 }

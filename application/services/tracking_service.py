@@ -1,7 +1,7 @@
 from .base_service import BaseService
 from application.models.tracking_model import TrackingModel
 from application.common.foundation import db
-import time
+import time,json
 from flask import request
 
 class TrackingService(BaseService):
@@ -13,12 +13,11 @@ class TrackingService(BaseService):
 
         trackingdata = TrackingModel(
             logtime = strTime,
-            content = input,
-            result = output,
+            content = json.dumps(input),
+            result = json.dumps(output),
             user_id = userID,
             remote_ip = request.remote_addr
         )
-
         db.session.add(trackingdata)
         db.session.commit()
 

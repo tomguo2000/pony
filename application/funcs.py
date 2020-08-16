@@ -391,3 +391,29 @@ def route_dynamic_dataupdate(body):
 def route_remotecontrol(body):
     from application.views.route_view import RouteRemoteControl
     return RouteRemoteControl(locals()).as_view()
+
+
+@admin_token_required
+def add_setting(body):
+    from application.views.setting_view import AddSettingView
+    return AddSettingView(locals()).as_view()
+
+@admin_token_required
+def get_settings():
+    from application.views.setting_view import GetSettingsView
+    return GetSettingsView(locals()).as_view()
+
+@admin_token_required
+def get_setting(setting_id, flag):
+    from application.views.setting_view import GetSettingView
+    return GetSettingView(locals()).as_view()
+
+@admin_token_required
+def delete_setting(setting_id):
+    from application.views.setting_view import DeleteSettingView
+    return DeleteSettingView(locals()).as_view()
+
+@admin_token_required
+def modify_setting_by_id(setting_id,body):
+    from application.views.setting_view import ModifySettingViewByID
+    return ModifySettingViewByID(locals()).as_view()

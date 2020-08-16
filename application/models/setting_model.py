@@ -7,6 +7,7 @@ class SettingModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
     value = db.Column(db.String(255))
+    additional = db.Column(db.String(255))
     status = db.Column(db.String(255))
     timestamp = db.Column(db.BigInteger)
 
