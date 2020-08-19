@@ -72,6 +72,7 @@ class GraphService(BaseService):
                 amount = cursor._rows[0]['count(1)']
                 print (amount)
                 n=int(amount/MAXLIST)
+                n = 1 if n == 0 else n
                 sql = "SELECT `up`, `down`, `addtime` FROM `network` WHERE `ipaddress`='{}' \
                 and `addtime` > {} and `addtime` < {} and `id` % {} =0".format(ipaddress,start,end,n)
                 cursor.execute(sql)
