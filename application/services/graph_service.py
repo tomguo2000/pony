@@ -58,12 +58,33 @@ class GraphService(BaseService):
 
     @staticmethod
     def get_network(ipaddress,start,end):
-        list = NetworkModel.query \
-            .filter(NetworkModel.ipaddress == ipaddress) \
-            .filter(between(NetworkModel.addtime,start,end)).all()
-        data =[]
-        for row in list:
-            data.append({'up':row.up,'down':row.down,'addtime':row.addtime})
+        import pymysql.cursors
+        connection = pymysql.connect(host='114.115.144.166',
+                                     user='pony',
+                                     password='LCGZFin3w2zGwTjH',
+                                     db='pony',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
+        try:
+            with connection.cursor() as cursor:
+                sql0 = "SELECT count(1) FROM `network` WHERE `ipaddress`='{}' and `addtime` > {} and `addtime` < {}".format(ipaddress,start,end,)
+                cursor.execute(sql0)
+                amount = cursor._rows[0]['count(1)']
+                print (amount)
+                n=int(amount/MAXLIST)
+                sql = "SELECT `up`, `down`, `addtime` FROM `network` WHERE `ipaddress`='{}' \
+                and `addtime` > {} and `addtime` < {} and `id` % {} =0".format(ipaddress,start,end,n)
+                cursor.execute(sql)
+                data = cursor.fetchall()
+        finally:
+            connection.close()
+
+        # list = NetworkModel.query \
+        #     .filter(NetworkModel.ipaddress == ipaddress) \
+        #     .filter(between(NetworkModel.addtime,start,end)).all()
+        # data =[]
+        # for row in list:
+        #     data.append({'up':row.up,'down':row.down,'addtime':row.addtime})
         return GraphService.ToAddtime(data)
 
 
