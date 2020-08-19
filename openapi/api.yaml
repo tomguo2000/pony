@@ -932,3 +932,38 @@ paths:
           description: setting was deleted
         "404":
           description: setting does not exist
+
+  "/graph":
+    get:
+      tags:
+        - settings
+      operationId: application.funcs.graph_online
+      summary: Get setting by setting_id
+      parameters:
+        - name: action
+          in: query
+          description: path arg
+          required: false
+          schema:
+            type: string
+        - name: ipaddress
+          in: query
+          description: path arg
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+        - name: end
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success

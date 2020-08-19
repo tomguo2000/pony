@@ -417,3 +417,9 @@ def delete_setting(setting_id):
 def modify_setting_by_id(setting_id,body):
     from application.views.setting_view import ModifySettingViewByID
     return ModifySettingViewByID(locals()).as_view()
+
+@admin_token_required
+def graph_online():
+    from application.views.graph_view import GetOnlineView
+    return GetOnlineView(locals()).as_view()
+
