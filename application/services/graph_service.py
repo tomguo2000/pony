@@ -20,44 +20,31 @@ class GraphService(BaseService):
             if tomem and data[i]['mem'] > 100: data[i]['mem'] = data[i]['mem'] / mPre
         return data
 
-
-
     @staticmethod
-    def get_online(ipaddress,start,end):
-        amount = OnlineUserAmountModel.query \
-            .filter(OnlineUserAmountModel.ipaddress == ipaddress) \
-            .filter(between(OnlineUserAmountModel.addtime,start,end)) \
+    def get_data_sqlalchemy(model,ipaddress,columns,start,end):
+        amount = model.query \
+            .filter(model.ipaddress == ipaddress) \
+            .filter(between(model.addtime,start,end)) \
             .count()
-
         n = int(amount/MAXLIST)
-
-        list = OnlineUserAmountModel.query \
-            .filter(OnlineUserAmountModel.ipaddress == ipaddress) \
-            .filter(between(OnlineUserAmountModel.addtime,start,end)) \
-            .filter(OnlineUserAmountModel.id %n == 0) \
+        list = model.query \
+            .filter(model.ipaddress == ipaddress) \
+            .filter(between(model.addtime,start,end)) \
+            .filter(model.id %n == 0) \
             .all()
-
         data =[]
         for row in list:
-            data.append({'online_user_amount':row.online_user_amount,'server_local_time':row.server_local_time,'addtime':row.addtime})
-
-        print (len(data))
-        return GraphService.ToAddtime(data)
+            temp = {}
+            for column in columns:
+                # print (getattr(row,column))
+                temp[column] = getattr(row,column)
+            data.append(temp)
+        return data
 
 
     @staticmethod
-    def get_cpu(ipaddress,start,end):
-        list = CpuIOModel.query \
-            .filter(CpuIOModel.ipaddress == ipaddress) \
-            .filter(between(CpuIOModel.addtime,start,end)).all()
-        data =[]
-        for row in list:
-            data.append({'cpu':row.cpu,'id':row.id,'addtime':row.addtime})
-        return GraphService.ToAddtime(data)
-
-
-    @staticmethod
-    def get_network(ipaddress,start,end):
+    def get_data_mysql(table,ipaddress,columns,start,end):
+        '''
         import pymysql.cursors
         connection = pymysql.connect(host='114.115.144.166',
                                      user='pony',
@@ -67,25 +54,59 @@ class GraphService(BaseService):
                                      cursorclass=pymysql.cursors.DictCursor)
         try:
             with connection.cursor() as cursor:
-                sql0 = "SELECT count(1) FROM `network` WHERE `ipaddress`='{}' and `addtime` > {} and `addtime` < {}".format(ipaddress,start,end,)
+                sql0 = "SELECT count(1) FROM {} WHERE `ipaddress`='{}' and `addtime` > {} and `addtime` < {}".format(table,ipaddress,start,end,)
                 cursor.execute(sql0)
                 amount = cursor._rows[0]['count(1)']
-                print (amount)
                 n=int(amount/MAXLIST)
                 n = 1 if n == 0 else n
-                sql = "SELECT `up`, `down`, `addtime` FROM `network` WHERE `ipaddress`='{}' \
-                and `addtime` > {} and `addtime` < {} and `id` % {} =0".format(ipaddress,start,end,n)
+                columns = ','.join(columns)
+                sql = "SELECT {} FROM `network` WHERE `ipaddress`='{}' \
+                and `addtime` > {} and `addtime` < {} and `id` % {} =0".format(columns,ipaddress,start,end,n)
                 cursor.execute(sql)
                 data = cursor.fetchall()
+                print(data)
         finally:
             connection.close()
+        return data
+        '''
+        sql0 = "SELECT count(1) FROM {} WHERE `ipaddress`='{}' and `addtime` > {} and `addtime` < {}".format(table,ipaddress,start,end,)
+        amount = db.session.execute(sql0)
+        amount = amount.cursor._rows[0][0]
+        n=int(amount/MAXLIST)
+        n = 1 if n == 0 else n
+        cols = ','.join(columns)
+        sql = "SELECT {} FROM {} WHERE `ipaddress`='{}' \
+                and `addtime` > {} and `addtime` < {} and `id` % {} =0".format(cols,table,ipaddress,start,end,n)
+        list = db.session.execute(sql).fetchall()
+        data = []
+        for row in list:
+            temp = {}
+            for column in columns:
+                temp[column] = getattr(row,column)
+            data.append(temp)
+        return data
 
-        # list = NetworkModel.query \
-        #     .filter(NetworkModel.ipaddress == ipaddress) \
-        #     .filter(between(NetworkModel.addtime,start,end)).all()
-        # data =[]
-        # for row in list:
-        #     data.append({'up':row.up,'down':row.down,'addtime':row.addtime})
+
+    @staticmethod
+    def get_online(ipaddress,start,end):
+        columns = ['online_user_amount','server_local_time','addtime']
+        data = GraphService.get_data_sqlalchemy(OnlineUserAmountModel,ipaddress,columns,start,end)
+        return GraphService.ToAddtime(data)
+
+
+    @staticmethod
+    def get_cpu(ipaddress,start,end):
+        columns = ['cpu','addtime']
+        # data = GraphService.get_data_sqlalchemy(CpuIOModel,ipaddress,columns,start,end)
+        data = GraphService.get_data_mysql('cpuio',ipaddress,columns,start,end)
+        return GraphService.ToAddtime(data)
+
+
+    @staticmethod
+    def get_network(ipaddress,start,end):
+        columns = ['up','down','addtime']
+        data = GraphService.get_data_mysql('network',ipaddress,columns,start,end)
+        # data = GraphService.get_data_sqlalchemy(NetworkModel,ipaddress,columns,start,end)
         return GraphService.ToAddtime(data)
 
 
