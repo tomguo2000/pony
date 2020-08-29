@@ -967,3 +967,38 @@ paths:
       responses:
         "200":
           description: Success
+
+  "/k":
+    get:
+      tags:
+        - settings
+      operationId: application.funcs.graph_k
+      summary: Get k graph
+      parameters:
+        - name: action
+          in: query
+          description: path arg
+          required: false
+          schema:
+            type: string
+        - name: period
+          in: query
+          description: path arg
+          required: false
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+        - name: end
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success

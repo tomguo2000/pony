@@ -3,6 +3,7 @@ from application.services.user_service import UserService
 from application.services.route_service import RouteService
 from application.services.usergroup_service import UserGroupService
 from application.services.tracking_service import TrackingService
+from application.services.k_service import KService
 from application.common.foundation import db
 from application.app import flask_app
 from flask import request
@@ -10,7 +11,7 @@ from application.common.returncode import returncode
 import logging
 import jwt
 import datetime, time
-from application.common.dict import thunder_service_name
+from application.common.dict import thunder_service_name,thunder_service_ID
 
 """
 each class is for one API
@@ -324,6 +325,10 @@ class AddUserView(BaseView):
                                           user.thunderservice_endtime)
         db.session.commit()
 
+        source = user_body.get('source') if user_body.get('source') else 'Unknown'
+        KService_action = '101'
+        KService.add_record(action=KService_action,parameter1=user.id,parameter2=source,timestamp=int(time.time()))
+
         return {
             "code": 200,
             "message": "add user success",
@@ -399,6 +404,16 @@ class UserLoginView(BaseView):
             print("7", time.time() * 1000)
             trackingoutput = "成功"
             TrackingService.tracking(trackinginput,trackingoutput, user.id)
+
+            device = user_body.get('device') if user_body.get('device') else 'Unknown'
+            thunderservice = user.thunderservice_id
+            # if thunderservice in (thunder_service_ID['LOW_SPEED'] or thunder_service_ID['TRIAL']):
+            KService_action = '102'
+            # thunderservice exits and is a VIP
+            if thunderservice and str(thunderservice) in thunder_service_ID['FUFEI']:
+                KService_action = '103'
+            KService.add_record(action=KService_action,parameter1=user.id,parameter2=device,timestamp=int(time.time()))
+
             print("8", time.time() * 1000)
             return {
                 "code": 200,

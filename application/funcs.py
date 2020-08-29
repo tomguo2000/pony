@@ -223,6 +223,7 @@ def init():
         id = 1,
         membershipCN = "普通会员",
         membershipEN = "membership",
+        duration = 9999,
         defaultClientAmount = 1,
         defaultTrafficAmount = -1,
         price = 0
@@ -231,6 +232,7 @@ def init():
         id = 2,
         membershipCN = "体验会员",
         membershipEN = "trial",
+        duration = 3,
         defaultClientAmount = 1,
         defaultTrafficAmount = -1,
         price = 0
@@ -239,6 +241,7 @@ def init():
         id = 3,
         membershipCN = "银牌会员",
         membershipEN = "silver",
+        duration = 31,
         defaultClientAmount = 1,
         defaultTrafficAmount = -1,
         price = 4.99
@@ -247,6 +250,7 @@ def init():
         id = 4,
         membershipCN = "金牌会员",
         membershipEN = "golden",
+        duration = 366,
         defaultClientAmount = 3,
         defaultTrafficAmount = -1,
         price = 49.99
@@ -255,6 +259,7 @@ def init():
         id = 5,
         membershipCN = "铂金会员",
         membershipEN = "platinum",
+        duration = 730,
         defaultClientAmount = 3,
         defaultTrafficAmount = -1,
         price = 89.99
@@ -423,3 +428,7 @@ def graph_online():
     from application.views.graph_view import GetOnlineView
     return GetOnlineView(locals()).as_view()
 
+@admin_token_required
+def graph_k():
+    from application.views.graph_view import GetKView
+    return GetKView(locals()).as_view()

@@ -104,11 +104,11 @@ class UserService(BaseService):
 
         logging.info ("active thunderservice: userid={},thunderservice_id={},thunderservice_starttime={},thunderservice_endtime={}".format(user_id,thunderservice_id,thunderservice_starttime,thunderservice_endtime))
         #Step1：按照已经分配的thunderservice找到可用的usergroup（usergroup的assined没有满）
-        usergroups = UserGroupModel.query.filter(UserGroupModel.maxcapacity>UserGroupModel.current_used).all()
+        usergroups = UserGroupModel.query.filter(UserGroupModel.maxUserCapacity>UserGroupModel.current_used).all()
         available=[]
         for row in usergroups:
             if str(thunderservice_id) in (row.which_thunderservice.split(",")):
-                temp = [row.current_used / row.maxcapacity, row.id]
+                temp = [row.current_used / row.maxUserCapacity, row.id]
                 available.append(temp)
         available.sort()
         usergroup = available[0][1]

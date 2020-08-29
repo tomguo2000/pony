@@ -1,5 +1,6 @@
 from .base_view import BaseView
 from application.services.order_service import OrderService
+from application.services.k_service import KService
 from application.common.foundation import db
 import time
 from application.common.returncode import returncode
@@ -88,6 +89,11 @@ class AddOrderView(BaseView):
             OrderService.add_order(data['user_id'], data['thunderservice_id'],\
                                    time.time()*1000,data['coupon'],data['amount'],data['emailNotification'])
             db.session.commit()
+
+            # 增加记录到K线图
+            KService_action = '201'
+            KService.add_record(action=KService_action,parameter1=data['amount'],parameter2='New',timestamp=int(time.time()))
+
             return {
                 "code":200,
                 "message":"Add order success"
@@ -178,6 +184,11 @@ class FulfillOrderView(BaseView):
                         OrderService.mark_fulfilled(order_id)
                         db.session.commit()
 
+                        # 增加记录到K线图
+                        KService_action = '201'
+                        KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
+
+
                         return{
                                   "code":200,
                                   "message":"Fulfill this order success"
@@ -200,6 +211,10 @@ class FulfillOrderView(BaseView):
 
                         OrderService.mark_fulfilled(order_id)
                         db.session.commit()
+
+                        # 增加记录到K线图
+                        KService_action = '201'
+                        KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
                         return{
                                   "code":200,
                                   "message":"Fulfill this order success"

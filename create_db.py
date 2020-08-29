@@ -34,6 +34,7 @@ from application.models.usergroup_model import UserGroupModel
 from application.models.tracking_model import TrackingModel
 from application.models.order_model import OrderModel
 from application.models.setting_model import SettingModel
+from application.models.k_model import KModel
 
 
 
