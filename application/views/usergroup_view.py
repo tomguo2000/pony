@@ -94,8 +94,8 @@ class RefillUserGroupView(BaseView):
         usergroup_reality = UserGroupService.get_usergroup_reality(usergroup_id)
 
         if usergroup_data:
-            refill_count = usergroup_data.get('maxUserCapacity') - usergroup_reality.get('pwd_count')
-            print ("maxUserCapacity:",usergroup_data.get('maxUserCapacity'))
+            refill_count = usergroup_data.get('maxPwdCapacity') - usergroup_reality.get('pwd_count')
+            print ("maxPwdCapacity:",usergroup_data.get('maxPwdCapacity'))
             print ("pwd_count:",usergroup_reality.get('pwd_count'))
             UserGroupService.refill(usergroup_id,refill_count)
             db.session.commit()

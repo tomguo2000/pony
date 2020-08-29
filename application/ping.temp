@@ -1,0 +1,7 @@
+PING thunderacce.com (139.162.110.95): 56 data bytes
+64 bytes from 139.162.110.95: icmp_seq=0 ttl=45 time=127.987 ms
+Request timeout for icmp_seq 1
+
+--- thunderacce.com ping statistics ---
+3 packets transmitted, 1 packets received, 66.7% packet loss
+round-trip min/avg/max/stddev = 127.987/127.987/127.987/0.000 ms

@@ -16,12 +16,7 @@ class GetSettingView(BaseView):
         setting_id = self.parameters.get('setting_id')
         logging.info("GetSettingView. setting_id:{}".format(setting_id))
         setting = SettingService.get_setting(setting_id)
-        print (setting)
-        if not setting.timestamp:
-            SettingService.update_status_by_name(setting)
-            setting = SettingService.get_setting(setting_id)
-
-        if int(time.time()) - setting.timestamp >60:
+        if not setting.timestamp or (int(time.time()) - setting.timestamp >60):
             SettingService.update_status_by_name(setting)
             setting = SettingService.get_setting(setting_id)
 
