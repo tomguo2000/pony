@@ -140,3 +140,7 @@ class KService(BaseService):
                     break
         return re
 
+    @staticmethod
+    def get_user_DAU(action,start,end):
+        amount = KModel.query.filter(KModel.action == action).filter(between(KModel.timestamp,start,end)).group_by(KModel.parameter1).count()
+        return amount if amount else 0

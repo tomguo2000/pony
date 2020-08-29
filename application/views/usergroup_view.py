@@ -33,7 +33,8 @@ class GetUserGroupView(BaseView):
                 'maxUserCapacity': usergroup_info.get('maxUserCapacity'),
                 'maxPwdCapacity': usergroup_info.get('maxPwdCapacity'),
                 'current_used': usergroup_info.get('current_used'),
-                'which_thunderservice':usergroup_info.get('which_thunderservice')
+                'which_thunderservice':usergroup_info.get('which_thunderservice'),
+                'pwdRes':usergroup_info.get('pwdRes')
             }
         else:
             return "None",400

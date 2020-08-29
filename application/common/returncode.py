@@ -23,5 +23,6 @@ returncode={
     "4021":"No setting ID find",
     "4022":"Name or value is missed",
     "4023":"End time must bigger then start",
+    "4024":"Unknown action!",
     "5001":"DB ERROR,Please try later",
 }

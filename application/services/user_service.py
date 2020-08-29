@@ -4,6 +4,7 @@ from application.models.thunderservice_model import ThunderserviceModel
 from application.models.pwresources_model import PWResourcesModel
 from application.models.order_model import OrderModel
 from application.common.foundation import db
+from sqlalchemy import between,desc
 import logging
 
 
@@ -11,6 +12,11 @@ class UserService(BaseService):
     @staticmethod
     def get_user_amount():
         userAmount = UserModel.query.filter().count()
+        return userAmount if userAmount else 0
+
+    @staticmethod
+    def get_newuser_amount(start,end):
+        userAmount = UserModel.query.filter(between(UserModel.register_datetime,start*1000,end*1000)).count()
         return userAmount if userAmount else 0
 
     @staticmethod

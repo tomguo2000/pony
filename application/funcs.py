@@ -432,3 +432,8 @@ def graph_online():
 def graph_k():
     from application.views.graph_view import GetKView
     return GetKView(locals()).as_view()
+
+@admin_token_required
+def dashboard():
+    from application.views.dashboard_view import GetDashboardView
+    return GetDashboardView(locals()).as_view()

@@ -1,6 +1,7 @@
 from .base_service import BaseService
 from application.models.order_model import OrderModel
 from application.common.foundation import db
+from sqlalchemy import between,func
 
 
 class OrderService(BaseService):
@@ -14,6 +15,7 @@ class OrderService(BaseService):
             coupon = coupon,
             amount = amount,
             emailNotification = emailNotification,
+            orderStatus = '1'
         )
         db.session.add(order)
 
@@ -66,3 +68,19 @@ class OrderService(BaseService):
         for key in update_data:
             setattr(update,key,update_data[key])
 
+    @staticmethod
+    def get_order_sum(start,end):
+        orderSum = OrderModel.query(func.sum(OrderModel.amount)).filter(between(OrderModel.placeOrderTime,start*1000,end*1000)).all()
+        return orderSum if orderSum else 0
+
+    @staticmethod
+    def get_paidOrder_sum(start,end):
+        # paidOrderSum = OrderModel.query(func.sum(OrderModel.amount)).filter(between(OrderModel.placeOrderTime,start*1000,end*1000)).scalar()
+
+        sql = "SELECT SUM(amount) as amount from orders \
+                WHERE orderStatus = '2' AND  \
+                placeOrderTime between {} and {}" \
+            .format(start*1000,end*1000)
+        list = db.session.execute(sql).fetchall()
+        paidOrderSum =float('%.2f' % list[0][0])
+        return paidOrderSum if paidOrderSum else 0

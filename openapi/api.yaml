@@ -1002,3 +1002,20 @@ paths:
       responses:
         "200":
           description: Success
+
+  "/dashboard":
+    get:
+      tags:
+        - dashboard
+      operationId: application.funcs.dashboard
+      summary: Get dashboard data
+      parameters:
+        - name: action
+          in: query
+          description: path arg
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success

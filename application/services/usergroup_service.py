@@ -9,7 +9,10 @@ class UserGroupService(BaseService):
     @staticmethod
     def get_usergroup(usergroup_id):
         usergroup = UserGroupModel.query.filter(UserGroupModel.id == usergroup_id).first()
-        return usergroup.__dict__ if usergroup else None
+        pwdRes = UserGroupService.get_usergroup_reality(usergroup_id)
+        re = usergroup.__dict__
+        re["pwdRes"]=pwdRes
+        return re if usergroup else None
 
     @staticmethod
     def get_usergroup_reality(usergroup_id):
