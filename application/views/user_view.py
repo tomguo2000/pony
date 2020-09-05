@@ -10,8 +10,11 @@ from flask import request
 from application.common.returncode import returncode
 import logging
 import jwt
+import config.settings
 import datetime, time
 from application.common.dict import thunder_service_name,thunder_service_ID
+from application.common.sendmail_sendcloud import send_simple_message
+
 
 """
 each class is for one API
@@ -342,11 +345,8 @@ class AddUserView(BaseView):
 class UserLoginView(BaseView):
     def process(self):
         trackinginput = self.parameters.get('body')
-        print("1", time.time() * 1000)
         user_body = self.parameters.get('body')
         user = UserService.get_user_by_email(user_body['email'])
-
-        print("2", time.time() * 1000)
 
         logging.info("UserLoginView,email:{}".format(user_body['email']))
         if not user:
@@ -356,8 +356,7 @@ class UserLoginView(BaseView):
                    }, 401
 
         if (user_body['password'] == user.password):
-            # if user.check_password(user_body['password']):
-            print("3", time.time() * 1000)
+        # if user.check_password(user_body['password']):
             token = jwt.encode(
                 {'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000)},
                 flask_app.config['SECRET_KEY'])
@@ -366,7 +365,6 @@ class UserLoginView(BaseView):
                                       flask_app.config['SECRET_KEY'])
             UserService.save_token(user.id, token, refreshToken)
             db.session.commit()
-            print("4", time.time() * 1000)
 
             pwresource = UserService.get_user_service_password(user.id)
             if pwresource:
@@ -377,11 +375,7 @@ class UserLoginView(BaseView):
                     "UserLoginView. This user :{} do not have thunderservice password, use reserved insteed".format(
                         user_body['email']))
 
-            print("5", time.time() * 1000)
-
             routes = RouteService.get_routes_by_group_ID(user.usergroup_id)
-
-            print("6", time.time() * 1000)
 
             routes_info = list()
             for route in routes:
@@ -401,7 +395,6 @@ class UserLoginView(BaseView):
                     # 'trafficResetDay': route.trafficResetDay,
                     'password': thunderservice_password
                 })
-            print("7", time.time() * 1000)
             trackingoutput = "成功"
             TrackingService.tracking(trackinginput,trackingoutput, user.id)
 
@@ -414,7 +407,6 @@ class UserLoginView(BaseView):
                 KService_action = '103'
             KService.add_record(action=KService_action,parameter1=user.id,parameter2=device,timestamp=int(time.time()))
 
-            print("8", time.time() * 1000)
             return {
                 "code": 200,
                 "message": "login success",
@@ -441,3 +433,41 @@ class UserLoginView(BaseView):
     def check_registed_user_by_email(self, user_email):
         if UserService.get_user_by_email(user_email):
             return True
+
+class ResetPasswordView(BaseView):
+
+    def process(self):
+        email = request.args.get('email')
+        user = UserService.get_user_by_email(email)
+
+        if user:
+            #TODO Check if user_id is currently logged in
+            reset_token = jwt.encode({'user_id': user.id,'action':'resetpassword', 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=5)},
+            flask_app.config['SECRET_KEY'])
+            reset_token = reset_token.decode("utf-8")
+            print(reset_token)
+            # send email to customer
+            # if (send_simple_message(email,"重置密码",reset_token))==200:
+            #     return {"code":200,"message":"Send email success"}
+            # else:
+            #     return{"code":4025,"message":returncode['4025']},401
+        else:
+            return {"code": 4001,"message": returncode['4001'],}, 401
+
+class PwdResetTokenView(BaseView):
+    def process(self):
+        body = self.parameters.get('body')
+        print("body:",body)
+        reset_token = body['reset_token']
+        newpassword = body['newpassword']
+        try:
+            data = jwt.decode(reset_token, config.settings.SECRET_KEY)
+            if data.get('action')!= 'resetpassword':
+                return {"code": 4004,"message": returncode['4004'],}, 401
+            if UserService.get_user(data['user_id']):
+                UserService.user_pwdreset_submit(data['user_id'],newpassword)
+                db.session.commit()
+            else:
+                return {"code": 4004,"message": returncode['4004'],}, 401
+        except:
+            return {"code": 4004,"message": returncode['4004'],}, 401

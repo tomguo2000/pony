@@ -37,12 +37,13 @@ def token_required(f):
                        "data":{}
                    },401
 
-        if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401
-            return {
-                       "code":4006,
-                       "message": returncode['4006'],
-                   },401
+        # if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401。目前逻辑不对
+        #     return {
+        #                "code":4006,
+        #                "message": returncode['4006'],
+        #            },401
 
+        # return f(current_user, *args, **kwargs)    #返回token中的userid给被装饰的函数
         return f(*args, **kwargs)
 
     return decorated
@@ -437,3 +438,11 @@ def graph_k():
 def dashboard():
     from application.views.dashboard_view import GetDashboardView
     return GetDashboardView(locals()).as_view()
+
+def pwdreset():
+    from application.views.user_view import ResetPasswordView
+    return ResetPasswordView(locals()).as_view()
+
+def pwdreset_token(body):
+    from application.views.user_view import PwdResetTokenView
+    return PwdResetTokenView(locals()).as_view()

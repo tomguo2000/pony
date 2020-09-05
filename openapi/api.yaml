@@ -1019,3 +1019,40 @@ paths:
       responses:
         "200":
           description: Success
+
+  "/pwdreset":
+    get:
+      tags:
+        - reset password
+      operationId: application.funcs.pwdreset
+      summary: Reset password request
+      parameters:
+        - name: email
+          in: query
+          description: query arg
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+
+    post:
+      tags:
+        - reset password
+      operationId: application.funcs.pwdreset_token
+      summary: Reset password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reset_token:
+                  type: string
+                newpassword:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: Success

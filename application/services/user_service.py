@@ -51,6 +51,13 @@ class UserService(BaseService):
         return user if user else None
 
     @staticmethod
+    def user_pwdreset_submit(user_id,newpassword):
+        user = UserModel.query.filter(UserModel.id == user_id).first()
+        user.password = newpassword
+        user.set_password(user.password)
+        return True
+
+    @staticmethod
     def add_user(user_name,user_email,user_password,register_source,email_verified,register_datetime):
         from application.common.dict import thunder_service_ID
         from application.models.thunderservice_model import ThunderserviceModel

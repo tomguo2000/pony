@@ -24,5 +24,6 @@ returncode={
     "4022":"Name or value is missed",
     "4023":"End time must bigger then start",
     "4024":"Unknown action!",
+    "4025":"Password reset email send error,please try later",
     "5001":"DB ERROR,Please try later",
 }
