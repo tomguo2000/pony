@@ -7,7 +7,7 @@ Q:How to fix  pip install mysqlclient ERROR on Macbookpro?
 A:Follow this link for detail
 https://medium.com/@shandou/pipenv-install-mysqlclient-on-macosx-7c253b0112f2
 
-add a new RD member:wq
+add a new RD member
 
 Git:
 1. (any):git checkout master (switch to master)
