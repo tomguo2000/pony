@@ -6,7 +6,7 @@ chardet==3.0.4
 Click==7.0
 clickclick==1.2.2
 connexion==2.6.0
-cryptography==2.9
+cryptography==3.2
 ecdsa==0.15
 Flask==1.1.1
 Flask-Admin==1.5.6
