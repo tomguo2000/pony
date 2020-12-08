@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Pet Shop Example API
+  title: Pony backend
   version: 1.0.0
-  description: Simple example API to store and retrieve pets
+  description: backend project
   x-audience: external-public
   x-api-id: d2b9be12-eb8b-4d16-83a9-178c8144aedf
 
@@ -348,6 +348,54 @@ paths:
       responses:
         "200":
           description: success
+  /app/register:
+    post:
+      tags:
+        - app
+      summary: register user from app
+      operationId: application.funcs.app_register
+      parameters:
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: success
+
+  /app/login:
+    post:
+      tags:
+        - app
+      summary: login from app
+      operationId: application.funcs.app_login
+      parameters:
+        - name: flag
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+            default: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+        required: true
+      responses:
+        "200":
+          description: success
+
   "/usergroups/{usergroup_id}":
     get:
       tags:

@@ -1,9 +1,61 @@
 from flask import request
 from functools import wraps
-import jwt
+import jwt,json,hashlib,time
 from application.models.user_model import UserModel
 from application.common.returncode import returncode
 import config.settings
+
+
+def app_sign_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        sign = None
+
+        if 'sign' in request.headers:
+            sign = request.headers['sign']
+
+        if not sign:
+            return {
+                       "code":4026,
+                       "message": returncode['4026'],
+                       "data":{}
+                   },401
+
+        body = json.loads(request.get_data())
+        try:
+
+            appkey = body.get("appkey")
+            timestamp = body.get("timestamp")
+            timestamp = str(timestamp)
+            sk = config.settings.AK_SK.get(appkey)["sk"]
+            sign_oridata = appkey+timestamp+sk
+            sign_oridata = sign_oridata.encode()
+            print (sign_oridata)
+            signed = hashlib.md5(sign_oridata).hexdigest()
+            print (signed)
+            if signed != sign:
+                return {
+                           "code":4027,
+                           "message": returncode['4027'],
+                           "data":{}
+                       },401
+        except:
+            return {
+                       "code":4027,
+                       "message": returncode['4027'],
+                       "data":{}
+                   },401
+
+        if abs(body.get("timestamp") - int(time.time())) > 600:
+            return {
+                       "code":4028,
+                       "message": returncode['4028'],
+                       "data":{}
+                   },401
+
+        return f(*args, **kwargs)
+
+    return decorated
 
 def token_required(f):
     @wraps(f)
@@ -132,6 +184,16 @@ def user_login(body):
 def add_user(body):
     from application.views.user_view import AddUserView
     return AddUserView(locals()).as_view()
+
+@app_sign_required
+def app_register(body):
+    from application.views.user_view import AddUserView
+    return AddUserView(locals()).as_view()
+
+@app_sign_required
+def app_login(body):
+    from application.views.user_view import UserLoginView
+    return UserLoginView(locals()).as_view()
 
 @admin_token_required
 def add_order(body):

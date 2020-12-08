@@ -76,7 +76,7 @@ class UserService(BaseService):
             thunderservice_client_amount = thunderservice_client_amount,
             thunderservice_traffic_amount = thunderservice_traffic_amount,
             thunderservice_starttime = register_datetime,
-            thunderservice_endtime = 4102367245000,
+            thunderservice_endtime = 4102329600,
             affiliate = False
         )
         user.set_password(user.password)

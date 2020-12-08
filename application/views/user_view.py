@@ -317,9 +317,9 @@ class AddUserView(BaseView):
                    }, 400
         logging.info("AddUserView. {}".format(user_body))
         UserService.add_user(user_body.get('name'), user_body.get('email'), user_body.get('password'),
-                             user_body.get('source'), user_body.get('email_verified'), time.time() * 1000)
+                             user_body.get('appkey'), user_body.get('email_verified'), int(time.time()))
         db.session.commit()
-        if not user_body['email_verified']:
+        if not user_body.get('email_verified'):
             logging.error("email_verified false, So we need send an verify email to {}".format(user_body['email']))
 
         # get user service info again, active it.
@@ -328,7 +328,7 @@ class AddUserView(BaseView):
                                           user.thunderservice_endtime)
         db.session.commit()
 
-        source = user_body.get('source') if user_body.get('source') else 'Unknown'
+        source = user_body.get('appkey') if user_body.get('appkey') else 'Unknown'
         KService_action = '101'
         KService.add_record(action=KService_action,parameter1=user.id,parameter2=source,timestamp=int(time.time()))
 
@@ -381,9 +381,9 @@ class UserLoginView(BaseView):
             for route in routes:
                 routes_info.append({
                     'id': route.id,
-                    'usergroup_id': route.usergroup_id,
+                    # 'usergroup_id': route.usergroup_id,
                     'sequence': route.sequence,
-                    'online': route.online,
+                    # 'online': route.online,
                     'domain': route.domain,
                     'port': route.port,
                     # 'ipaddress': route.ipaddress,
@@ -407,13 +407,16 @@ class UserLoginView(BaseView):
                 KService_action = '103'
             KService.add_record(action=KService_action,parameter1=user.id,parameter2=device,timestamp=int(time.time()))
 
+            thunderservice_name = thunder_service_name[str(thunderservice)]
+
             return {
                 "code": 200,
                 "message": "login success",
                 "results": {
-                    "user": {
+                    "user_info": {
                         "user_id": user.id,
                         "thunderservice_id": user.thunderservice_id,
+                        "thunderservice_name":thunderservice_name,
                         "thunderservice_endtime": user.thunderservice_endtime,
                         "usergroup_id": user.usergroup_id
                     },

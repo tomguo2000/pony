@@ -25,5 +25,8 @@ returncode={
     "4023":"End time must bigger then start",
     "4024":"Unknown action!",
     "4025":"Password reset email send error,please try later",
+    "4026":"Put app sign in POST request header",
+    "4027":"App sign verify fail",
+    "4028":"App sign verify OK but toooooo late",
     "5001":"DB ERROR,Please try later",
 }
