@@ -21,8 +21,8 @@ class GetPwresourcesView(BaseView):
         if not (_body.get('resgroup') and _body.get('timestamp') and _body.get('sign')):
             return {"result":'error',"resource":'Fuckoff,you are missing something'}, 200
 
-        # if not self.check_sign(_body.get('resgroup'),_body.get('timestamp'),_body.get('sign')):
-        #     return {"result":'error',"resource":'Fuckoff,your sign is False'}, 200
+        if not self.check_sign(_body.get('resgroup'),_body.get('timestamp'),_body.get('sign')):
+            return {"result":'error',"resource":'Fuckoff,your sign is False'}, 200
 
         logging.info("a new requirment received:"+str(_body))
 
