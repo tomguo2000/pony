@@ -8,7 +8,10 @@ class PWResourcesModel(db.Model):
     oripassword = db.Column(db.String(56), nullable=True)
     hashedpassword = db.Column(db.String(56), nullable=True)
     user_id = db.Column(db.Integer)
-    usergroup_id = db.Column(db.Integer, db.ForeignKey('usergroup.id'))
+    usergroup_id = db.Column(db.Integer)
+    quota = db.Column(db.Integer,default = -1)
+    download = db.Column(db.BigInteger)
+    upload = db.Column(db.BigInteger)
 
 
 

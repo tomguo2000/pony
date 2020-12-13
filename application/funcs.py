@@ -460,6 +460,10 @@ def route_remotecontrol(body):
     from application.views.route_view import RouteRemoteControl
     return RouteRemoteControl(locals()).as_view()
 
+def route_get_pwresources(body):
+    from application.views.pwresources_view import GetPwresourcesView
+    return GetPwresourcesView(locals()).as_view()
+
 
 @admin_token_required
 def add_setting(body):
