@@ -45,3 +45,4 @@ urllib3==1.25.8
 Werkzeug==1.0.0
 WTForms==2.2.1
 zipp==3.1.0
+PyMySQL==0.10.1
