@@ -928,6 +928,16 @@ paths:
         "200":
           description: success
 
+  /settings/genmagic:
+    get:
+      tags:
+        - settings
+      summary: generator magic characts for proxy
+      operationId: application.funcs.gen_magic
+      responses:
+        "200":
+          description: Success
+
   "/settings/{setting_id}":
     get:
       tags:

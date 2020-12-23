@@ -1,7 +1,7 @@
 from .base_view import BaseView
 from application.services.setting_service import SettingService
 from application.common.foundation import db
-import time,json
+import time, json, base64, random
 from application.common.returncode import returncode
 from flask import request
 import logging
@@ -39,6 +39,50 @@ class GetSettingView(BaseView):
                    "code": 4021,
                    "message": returncode['4021']
                },400
+
+class GenMagicView(BaseView):
+    def process(self):
+
+        proxy = "http://www.a"
+        bytes = proxy.encode()
+        encoded = base64.b64encode(bytes)
+        encoded_str = encoded.decode()
+
+        try:
+            new_list = []
+            i = int(len(encoded_str)/8)
+            if i != 0:
+                for j in range(0, i+1):
+                    new_list.append(encoded_str[j*8:(j+1)*8])
+                if len(new_list[-1]) == 0:
+                    new_list.pop(-1)
+            else:
+                new_list.append(encoded_str)
+
+            magic_list = []
+            for i in range(0, len(new_list)-1):
+                temp = list(new_list[i])
+                temp.reverse()
+                magic_list.append(''.join(temp))    #reverse every 8 character
+                magic_list.append(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'))    #add random character for each section
+                magic_list.append(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'))    #add random character for each section
+
+            magic_list.append(new_list[-1])
+
+            magic_str = ''.join(magic_list)
+
+            return {
+                "code": 200,
+                "message": "get setting success",
+                "results": magic_str
+            }
+
+        except:
+            return {
+                       "code": 5002,
+                       "message": returncode['5002']
+                   }, 400
+
 
 class GetSettingsView(BaseView):
     def process(self):

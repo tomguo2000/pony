@@ -29,4 +29,5 @@ returncode={
     "4027":"App sign verify fail",
     "4028":"App sign verify OK but toooooo late",
     "5001":"DB ERROR,Please try later",
+    "5002":"Generate magic character error"
 }
