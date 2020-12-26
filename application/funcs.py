@@ -465,7 +465,7 @@ def route_get_pwresources(body):
     return GetPwresourcesView(locals()).as_view()
 
 
-# @admin_token_required
+@admin_token_required
 def gen_magic():
     from application.views.setting_view import GenMagicView
     return GenMagicView(locals()).as_view()

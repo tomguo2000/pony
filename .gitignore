@@ -4,3 +4,5 @@ __pycache__
 .idea/
 *.pyc
 venv/
+nohup.out
+application/nohup.out
