@@ -33,7 +33,7 @@ def app_sign_required(f):
             print (sign_oridata)
             signed = hashlib.md5(sign_oridata).hexdigest()
             print (signed)
-            if signed != sign:
+            if signed != sign.lower():
                 return {
                            "code":4027,
                            "message": returncode['4027'],
@@ -57,11 +57,31 @@ def app_sign_required(f):
 
     return decorated
 
-def token_required(f):
+def user_token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
 
+        user_id_get =request.args.get('user_id')   #might be None
+
+        body = (request.get_data())                #might be b''
+        print (body)
+        try:
+            user_id_post = json.loads(body).get("user_id")
+        except:
+            user_id_post = None
+
+        if user_id_get:
+            user_id = user_id_get
+        elif user_id_post:
+            user_id = user_id_post
+        else:
+            return {
+                       "code":5003,
+                       "message": returncode['5003'],
+                       "data":{}
+                   },401
+
+        token = None
         if 'Authorization' in request.headers:
             token = request.headers['Authorization']
 
@@ -89,15 +109,14 @@ def token_required(f):
                        "data":{}
                    },401
 
-        # if (not current_user.admin and current_user.id != user_id) : #既不是admin，也不是用户自己，则401。目前逻辑不对
-        #     return {
-        #                "code":4006,
-        #                "message": returncode['4006'],
-        #            },401
+        if (not current_user.admin) and (current_user.id != int(user_id)) : #既不是admin，也不是用户自己，则401。
+            return {
+                       "code":4006,
+                       "message": returncode['4006'],
+                   },401
 
         # return f(current_user, *args, **kwargs)    #返回token中的userid给被装饰的函数
         return f(*args, **kwargs)
-
     return decorated
 
 def admin_token_required(f):
@@ -143,17 +162,17 @@ def admin_token_required(f):
 
     return decorated
 
-@token_required
+@user_token_required
 def get_user(user_id, flag):
     from application.views.user_view import GetUserView
     return GetUserView(locals()).as_view()
 
-@token_required
+@user_token_required
 def get_user_order(user_id, flag):
     from application.views.user_view import GetUserOrderView
     return GetUserOrderView(locals()).as_view()
 
-@token_required
+@user_token_required
 def get_user_service(user_id, flag):
     from application.views.user_view import GetUserServiceView
     return GetUserServiceView(locals()).as_view()
@@ -187,13 +206,34 @@ def add_user(body):
 
 @app_sign_required
 def app_register(body):
-    from application.views.user_view import AddUserView
-    return AddUserView(locals()).as_view()
+    from application.views.app_view import AppRegisterUserView
+    return AppRegisterUserView(locals()).as_view()
 
-@app_sign_required
+# @app_sign_required
 def app_login(body):
-    from application.views.user_view import UserLoginView
-    return UserLoginView(locals()).as_view()
+    from application.views.app_view import AppUserLoginView
+    return AppUserLoginView(locals()).as_view()
+
+@user_token_required
+def app_get_user(user_id):
+    from application.views.app_view import AppGetUserView
+    return AppGetUserView(locals()).as_view()
+
+def app_refresh_token(body):
+    from application.views.app_view import AppRefreshTokenView
+    return AppRefreshTokenView(locals()).as_view()
+
+@user_token_required
+def app_get_announcement(user_id):
+    from application.views.app_view import AppGetAnnouncementView
+    return AppGetAnnouncementView(locals()).as_view()
+
+@user_token_required
+def app_feedback(body):
+    from application.views.app_view import AppFeedbackView
+    return AppFeedbackView(locals()).as_view()
+
+
 
 @admin_token_required
 def add_order(body):
@@ -205,7 +245,7 @@ def get_orders():
     from application.views.order_view import GetOrdersView
     return GetOrdersView(locals()).as_view()
 
-@token_required
+@user_token_required
 def get_order(order_id, flag):
     from application.views.order_view import GetOrderView
     return GetOrderView(locals()).as_view()

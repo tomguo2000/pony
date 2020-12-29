@@ -396,6 +396,89 @@ paths:
         "200":
           description: success
 
+  /app/getUserInfo:
+    get:
+      tags:
+        - app
+      summary: get or refresh user info from app
+      operationId: application.funcs.app_get_user
+      parameters:
+        - name: user_id
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: success
+
+  /app/refreshToken:
+    post:
+      tags:
+        - app
+      summary: get or refresh user info from app
+      operationId: application.funcs.app_refresh_token
+      parameters:
+        - name: user_id
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: success
+
+  /app/announcement:
+    get:
+      tags:
+        - app
+      summary: get announcement
+      operationId: application.funcs.app_get_announcement
+      parameters:
+        - name: user_id
+          in: query
+          description: url arg
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: success
+
+  /app/feedback:
+    post:
+      tags:
+        - app
+      summary: post feedback from app
+      operationId: application.funcs.app_feedback
+      parameters:
+        - name: user_id
+          in: query
+          description: url arg
+          required: false
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: success
+
+
   "/usergroups/{usergroup_id}":
     get:
       tags:

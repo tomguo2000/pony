@@ -150,7 +150,7 @@ class RouteService(BaseService):
 
     @staticmethod
     def get_routes_by_group_ID(group_id):
-        routes = RouteModel.query.filter(RouteModel.usergroup_id == group_id).all()
+        routes = RouteModel.query.filter(RouteModel.usergroup_id == group_id).order_by(RouteModel.sequence).all()
         return routes
         # routes_info = list()
         # for route in routes:

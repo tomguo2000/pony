@@ -14,7 +14,13 @@ thunder_service_name = {
     "4":"金牌会员",
     "5":"铂金会员"
 }
-
+thunder_service_nameEN = {
+    "1":"Card Member",
+    "2":"Trial Member",
+    "3":"Silver",
+    "4":"Golden",
+    "5":"Platnium"
+}
 orderStatus = {
     "1":"未支付",
     "2":"支付成功",

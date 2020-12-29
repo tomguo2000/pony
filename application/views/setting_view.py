@@ -42,9 +42,25 @@ class GetSettingView(BaseView):
 
 class GenMagicView(BaseView):
     def process(self):
+        data = {
+            "api_gateway":[
+                "http://114.115.144.166:8080",
+                "https://not.availablenow.com:443"
+            ],
+            "website_proxy":"https://not.availablenow.com:443",
+            "windows_client_ver":"6.0",
+            "windows_client_download_url":"https://obs-9bcf.obs.cn-north-1.myhuaweicloud.com:443/release/Thunder_Test_V5.1.2.zip",
+            "android_client_ver":"2.7",
+            "android_client_download_url":"https://obs-9bcf.obs.cn-north-1.myhuaweicloud.com:443/release/ThunderAcc_release_3.1_sign.apk",
+            "mac_client_ver":"1.7",
+            "mac_client_download_url":"https://obs-9bcf.obs.cn-north-1.myhuaweicloud.com:443/release/Trojan2021.dmg"
+        }
 
-        proxy = "http://www.a"
-        bytes = proxy.encode()
+        data = json.dumps(data)
+        print (type (data))
+        print (data)
+
+        bytes = data.encode()
         encoded = base64.b64encode(bytes)
         encoded_str = encoded.decode()
 
@@ -73,7 +89,7 @@ class GenMagicView(BaseView):
 
             return {
                 "code": 200,
-                "message": "get setting success",
+                "message": "Generate magic character success",
                 "results": magic_str
             }
 
