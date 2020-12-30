@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>Thunder Network支付</title>
+
+<link rel="stylesheet" href="../static/css/style.css">
+
+</head>
+<body>
+    <div style="" class="paypage_wp">
+        <div class="cont">
+            <div class="price_box">
+                <p >{{productdetail}} </p>
+                <p class="totalprice"><i class="num"> {{price}} </i>美元</p>
+            </div>
+            <div class="orderinfo_box">
+                <div class="orderinfo open">
+                    <p>下单帐号：
+                        <span >{{useremail}}</span>
+                    </p>
+                    <p >订单编号：
+                        <span>{{orderid}}</span>
+                    </p>
+                </div>
+
+
+            </div>
+        </div>
+
+       <div style="display:none" class="content">
+            <form  id='form1' name='form1' action="alipayapi.php" class="alipayform" method="post" target="_blank">
+
+                    <input type="text" name="WIDout_trade_no" value="<?php echo ($orderID);?>">
+                    <input type="text" name="WIDsubject" value="<?php echo ($arrayDetail["$pid"]);?>">
+                    <input type="text" name="currency" value="USD">
+                    <input type="text" name="WIDtotal_fee" value="<?php echo ($arrayPrice["$pid"]);?>">
+                    <input type="text" name="WIDbody" value="<?php echo ($arrayDetail["$pid"]);?>">
+
+                    <input type="text" name="ClientName" value="<?php echo ($username);?>">
+                    <input type="text" name="ProductID" value="<?php echo ($pid);?>">
+                    <input type="text" name="OrderTime" value="<?php echo ($timestamp);?>">
+            </form>
+        </div>
+
+
+        <div class="payway_box">
+
+            <a class="payway" href="javascript:load_submit()">
+                <i  class="ico_wx ico_alipay"></i>
+                <span>支付宝支付</span>
+                <span><img></span>
+            </a>
+
+        </div>
+    </div>
+
+
+
+<script type='text/javascript'>
+    function load_submit()
+        {document.form1.submit()}
+
+</script>
+
+
+</body>
+</html>
