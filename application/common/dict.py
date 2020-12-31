@@ -7,6 +7,9 @@ thunder_service_ID = {
     "TRIAL":"2",
     "FUFEI":"3,4,5"
 }
+thunder_service_for_expressorderID = {
+    "FUFEI":"3,4"
+}
 thunder_service_name = {
     "1":"普通会员",
     "2":"体验会员",

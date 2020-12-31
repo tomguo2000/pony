@@ -6,15 +6,17 @@ from sqlalchemy import between,func
 
 class OrderService(BaseService):
     @staticmethod
-    def add_order(user_id,thunderservice_id,placeOrderTime,coupon,amount,emailNotification):
-        print (user_id,thunderservice_id,placeOrderTime,coupon,amount,emailNotification)
+    def add_order(order_id,user_id,thunderservice_id,placeOrderTime,coupon,amount,emailNotification,description):
+        print (user_id,thunderservice_id,placeOrderTime,coupon,amount,emailNotification,description)
         order = OrderModel(
+            order_id = order_id,
             user_id = user_id,
             thunderservice_id = thunderservice_id,
             placeOrderTime = placeOrderTime,
             coupon = coupon,
             amount = amount,
             emailNotification = emailNotification,
+            description = description,
             orderStatus = '1'
         )
         db.session.add(order)
@@ -60,6 +62,11 @@ class OrderService(BaseService):
     @staticmethod
     def get_order(order_id):
         order = OrderModel.query.filter(OrderModel.id == order_id).first()
+        return order if order else None
+
+    @staticmethod
+    def get_expressorder(expressorder_id):
+        order = OrderModel.query.filter(OrderModel.order_id == expressorder_id).first()
         return order if order else None
 
     @staticmethod

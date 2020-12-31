@@ -5,6 +5,7 @@ class OrderModel(db.Model):
     __tablename__ = 'orders'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_id = db.Column(db.String(30))
     user_id = db.Column(db.Integer)
     thunderservice_id = db.Column(db.Integer)
     placeOrderTime = db.Column(db.BigInteger)
@@ -16,6 +17,7 @@ class OrderModel(db.Model):
     amount = db.Column(db.Float)
     orderStatus = db.Column(db.String(20))
     thunderserviceStatus = db.Column(db.String(20))
+    description = db.Column(db.String(100))
 
     def __repr__(self):
         return '<OrderModel %r>' % (self.id)

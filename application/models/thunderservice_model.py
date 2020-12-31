@@ -13,6 +13,7 @@ class ThunderserviceModel(db.Model):
     price = db.Column(db.Float)
     onSalePrice = db.Column(db.Float)
     promotion = db.Column(db.Boolean)
+    description = db.Column(db.String(100))
 
 
     def __repr__(self):

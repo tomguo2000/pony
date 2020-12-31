@@ -16,7 +16,7 @@
         <div class="cont">
             <div class="price_box">
                 <p >{{productdetail}} </p>
-                <p class="totalprice"><i class="num"> {{price}} </i>美元</p>
+                <p class="totalprice"><i class="num"> {{amount}} </i>美元</p>
             </div>
             <div class="orderinfo_box">
                 <div class="orderinfo open">
@@ -33,17 +33,17 @@
         </div>
 
        <div style="display:none" class="content">
-            <form  id='form1' name='form1' action="http://114.115.144.166:5005/gen" class="alipayform" method="post" target="_blank">
+            <form  id='form1' name='form1' action="https://tj.umtouch.com/expresspay/expresspay.php" class="alipayform" method="post" target="_blank">
 
-                    <input type="text" name="WIDout_trade_no" value="<?php echo ($orderID);?>">
-                    <input type="text" name="WIDsubject" value="<?php echo ($arrayDetail["$pid"]);?>">
+                    <input type="text" name="WIDout_trade_no" value = "{{orderid}}">
+                    <input type="text" name="WIDsubject" value="{{subject}}">
                     <input type="text" name="currency" value="USD">
-                    <input type="text" name="WIDtotal_fee" value="<?php echo ($arrayPrice["$pid"]);?>">
-                    <input type="text" name="WIDbody" value="<?php echo ($arrayDetail["$pid"]);?>">
+                    <input type="text" name="WIDtotal_fee" value="{{amount}}">
+                    <input type="text" name="WIDbody" value="{{productdetail}}">
 
-                    <input type="text" name="ClientName" value="<?php echo ($username);?>">
-                    <input type="text" name="ProductID" value="<?php echo ($pid);?>">
-                    <input type="text" name="OrderTime" value="<?php echo ($timestamp);?>">
+                    <input type="text" name="ClientName" value="{{useremail}}">
+                    <input type="text" name="ProductID" value="{{productID}}">
+                    <input type="text" name="OrderTime" value="{{OrderTime}}">
             </form>
         </div>
 

@@ -479,18 +479,33 @@ paths:
           description: success
 
   /app/expressorder:
-    get:
+    post:
       tags:
         - app
       summary: place a express order from app
-      operationId: application.funcs.app_expressorder
+      operationId: application.funcs.app_addExpressorder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: success
+
+  /app/expressorder_view:
+    get:
+      tags:
+        - app
+      summary: render this page to mobile
+      operationId: application.funcs.app_expressorder_view
       parameters:
-        - name: user_id
+        - name: orderID
           in: query
           description: url arg
           required: false
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: success
