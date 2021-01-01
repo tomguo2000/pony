@@ -1,7 +1,9 @@
 from .base_service import BaseService
 from application.models.order_model import OrderModel
+from application.services.k_service import KService
 from application.common.foundation import db
 from sqlalchemy import between,func
+import time
 
 
 class OrderService(BaseService):
@@ -44,10 +46,54 @@ class OrderService(BaseService):
         order.orderStatus = '2'
 
     @staticmethod
-    def mark_fulfilled(order_id):
+    def make_fulfill(order_id):
+        from application.services.user_service import UserService
         order = OrderModel.query.filter(OrderModel.id == order_id).first()
-        # mark order as fulfilled
-        order.thunderserviceStatus = '1'
+        user = UserService.get_user(order.user_id)
+        if user:
+            from application.models.thunderservice_model import ThunderserviceModel
+            if user.thunderservice_id == order.thunderservice_id:
+
+                # 相同的thunderservice，只修改到期时间
+                thunderservice = ThunderserviceModel.query.filter(ThunderserviceModel.id == order.thunderservice_id).first()
+                duration = thunderservice.duration*86400*1000
+                user.thunderservice_endtime =  user.thunderservice_endtime+duration
+
+                # 标记本order已经完成了
+                order.thunderserviceStatus = '1'
+                db.session.commit()
+
+                # 增加记录到K线图
+                KService_action = '201'
+                KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
+
+                return True
+            else:
+                thunderservice = ThunderserviceModel.query.filter(ThunderserviceModel.id == order.thunderservice_id).first()
+                user_updatedata={
+                    "thunderservice_id":order.thunderservice_id,
+                    "thunderservice_client_amount":thunderservice.defaultClientAmount,
+                    "thunderservice_traffic_amount":thunderservice.defaultTrafficAmount,
+                }
+                thunderservice_starttime = time.time()*1000
+                thunderservice_endtime   = time.time()*1000
+                if thunderservice.id != 1:
+                    thunderservice_endtime = thunderservice_endtime + thunderservice.duration*86400*1000
+
+                UserService.modify_user_by_id(order.user_id,update_data=user_updatedata)
+                UserService.active_thunderservice(order.user_id,order.thunderservice_id,thunderservice_starttime,thunderservice_endtime)
+                db.session.commit()
+
+                order.thunderserviceStatus = '1'
+                db.session.commit()
+
+                # 增加记录到K线图
+                KService_action = '201'
+                KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
+                return True
+        else:
+            return False
+
 
     @staticmethod
     def get_order_amount():

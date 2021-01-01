@@ -151,6 +151,7 @@ class CancelOrderView(BaseView):
 class MarkOrderPaidView(BaseView):
     def process(self):
         order_id = self.parameters.get('order_id')
+        print (self.parameters)
         order_data = OrderService.get_order(order_id)
         if order_data:
             OrderService.mark_paid_order(order_id)
@@ -168,70 +169,21 @@ class MarkOrderPaidView(BaseView):
 
 class FulfillOrderView(BaseView):
     def process(self):
-        from application.services.user_service import UserService
         order_id = self.parameters.get('order_id')
         order = OrderService.get_order(order_id)
         if order.orderStatus == '2':
             if order.thunderserviceStatus != '1':
-                user = UserService.get_user(order.user_id)
-                if user:
-                    from application.models.thunderservice_model import ThunderserviceModel
-                    if user.thunderservice_id == order.thunderservice_id:
-
-                        # 相同的thunderservice，只修改到期时间
-                        thunderservice = ThunderserviceModel.query.filter(ThunderserviceModel.id == order.thunderservice_id).first()
-                        duration = thunderservice.duration*86400*1000
-                        user.thunderservice_endtime =  user.thunderservice_endtime+duration
-
-                        # 标记本order已经完成了
-                        OrderService.mark_fulfilled(order_id)
-                        db.session.commit()
-
-                        # 增加记录到K线图
-                        KService_action = '201'
-                        KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
-
-
-                        return{
-                                  "code":200,
-                                  "message":"Fulfill this order success"
-                              },200
-                    else:
-                        thunderservice = ThunderserviceModel.query.filter(ThunderserviceModel.id == order.thunderservice_id).first()
-                        user_updatedata={
-                            "thunderservice_id":order.thunderservice_id,
-                            "thunderservice_client_amount":thunderservice.defaultClientAmount,
-                            "thunderservice_traffic_amount":thunderservice.defaultTrafficAmount,
-                        }
-                        thunderservice_starttime = time.time()*1000
-                        thunderservice_endtime   = time.time()*1000
-                        if thunderservice.id != 1:
-                            thunderservice_endtime = thunderservice_endtime + thunderservice.duration*86400*1000
-
-                        UserService.modify_user_by_id(order.user_id,update_data=user_updatedata)
-                        UserService.active_thunderservice(order.user_id,order.thunderservice_id,thunderservice_starttime,thunderservice_endtime)
-                        db.session.commit()
-
-                        OrderService.mark_fulfilled(order_id)
-                        db.session.commit()
-
-                        # 增加记录到K线图
-                        KService_action = '201'
-                        KService.add_record(action=KService_action,parameter1=order.amount,parameter2='Paid',timestamp=int(time.time()))
-                        return{
-                                  "code":200,
-                                  "message":"Fulfill this order success"
-                        },200
+                if OrderService.make_fulfill(order_id):
+                    return{
+                             "code":200,
+                             "message": "order fulfilled success"
+                         },200
                 else:
-                    return {
-                        "code":4011,
-                        "message": returncode['4011']
-                    },400
-            else:
-                return {
-                    "code": 4014,
-                    "message": returncode['4014']
-                },400
+                    return{
+                              "code":4011,
+                              "message": returncode['4011']
+                          },400
+
         elif order:
             return{
                       "code":4016,

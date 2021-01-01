@@ -32,5 +32,6 @@ returncode={
     "5002":"Generate magic character error",
     "5003":"You missed user_id arg",
     "5004":"You missed some args",
-    "5005":"ThunderServiceID is invalid"
+    "5005":"ThunderServiceID is invalid",
+    "5006":"ThunderService fulfill error"
 }

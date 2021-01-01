@@ -567,3 +567,7 @@ def pwdreset():
 def pwdreset_token(body):
     from application.views.user_view import PwdResetTokenView
     return PwdResetTokenView(locals()).as_view()
+
+def expresspay(body):
+    from application.views.paymentgateway_view import FinishOrderView
+    return FinishOrderView(locals()).as_view()

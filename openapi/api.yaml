@@ -510,6 +510,22 @@ paths:
         "200":
           description: success
 
+  /expresspay:
+    post:
+      tags:
+        - expresspay
+      summary: expresspayment gateway for Alipay
+      operationId: application.funcs.expresspay
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: success
+
+
   "/usergroups/{usergroup_id}":
     get:
       tags:
