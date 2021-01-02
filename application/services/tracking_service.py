@@ -6,7 +6,7 @@ from flask import request
 
 class TrackingService(BaseService):
     @staticmethod
-    def tracking(input,output,userID):
+    def tracking(input,output=None,userID=None):
         timeStamp=time.time()
         localTime = time.localtime(timeStamp)
         strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)

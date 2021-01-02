@@ -1,6 +1,7 @@
 #out_trade_no：EX20210101114240U5P3。trade_no：2021010122001301201402609189。trade_status：TRADE_FINISHED
 from .base_view import BaseView
 from application.services.order_service import OrderService
+from application.services.tracking_service import TrackingService
 from application.services.thunderservice_service import GetThunderservice
 from application.services.user_service import UserService
 from application.services.k_service import KService
@@ -21,6 +22,8 @@ each class is for one API
 
 class FinishOrderView(BaseView):
     def process(self):
+        trackinginput = self.parameters.get('body')
+        TrackingService.tracking(trackinginput)
 
         FinishOrderViewbody = self.parameters.get('body')
         order_id    = str(FinishOrderViewbody.get('out_trade_no'))
