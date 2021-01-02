@@ -42,8 +42,8 @@ class FinishOrderView(BaseView):
                            },200
 
                 try:
-                    OrderService.mark_paid_order(order_id)
-                    OrderService.make_fulfill(order_id)
+                    OrderService.mark_paid_order(order.id)
+                    OrderService.make_fulfill(order.id)
                     return {
                            "code": 200,
                            "message": "thunder service all set"
