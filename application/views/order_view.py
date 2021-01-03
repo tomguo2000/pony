@@ -290,3 +290,31 @@ class addExpressorder(BaseView):
                        "code": 4011,
                        "message": returncode['4011']
                    },401
+
+class appCheckExpressOrderResult(BaseView):
+    def process(self):
+        data = self.parameters.get('body')
+        order_id = data.get('order_id')
+        order = OrderService.get_expressorder(order_id)
+        if order:
+            if order.orderStatus == '2':
+                if order.thunderserviceStatus == '1':
+                    return{
+                              "code":200,
+                              "message": "Order paid and thunderservice opened,please refresh your user info"
+                          },200
+                else:
+                    return{
+                              "code":201,
+                              "message": "Order paid and thunderservice is opening, please wait a second"
+                          },200
+            else:
+                return{
+                          "code":202,
+                          "message": "Order is waiting for pay"
+                      },200
+        else:
+            return{
+                      "code":4013,
+                      "message":  returncode['4013']
+                  },401

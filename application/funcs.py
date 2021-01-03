@@ -233,17 +233,20 @@ def app_feedback(body):
     from application.views.app_view import AppFeedbackView
     return AppFeedbackView(locals()).as_view()
 
+@user_token_required
 def app_addExpressorder(body):
     from application.views.order_view import addExpressorder
     return addExpressorder(locals()).as_view()
 
 def app_expressorder_view(orderID):
-    # resp = make_response(render_template('expressorder.html'), 200)
-    # resp.headers['Content-Type'] = 'text/html'
-    # return resp
-    # return make_response(render_template('expressorder.html',productdetail="12个月金牌会员",price="39.99",orderid="909090aaa",useremail="hahaha@ha.com"), 200)
+    #给手机扫码用，不带任何token
     from application.views.order_view import expressorderView
     return expressorderView(locals()).as_view()
+
+@user_token_required
+def app_checkExpressOrderResult(body):
+    from application.views.order_view import appCheckExpressOrderResult
+    return appCheckExpressOrderResult(locals()).as_view()
 
 @admin_token_required
 def add_order(body):

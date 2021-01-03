@@ -510,6 +510,21 @@ paths:
         "200":
           description: success
 
+  /app/checkExpressOrderResult:
+    post:
+      tags:
+        - app
+      summary: check the expressorder result
+      operationId: application.funcs.app_checkExpressOrderResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: success
+
   /expresspay:
     post:
       tags:
