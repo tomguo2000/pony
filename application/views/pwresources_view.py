@@ -15,7 +15,7 @@ class GetPwresourcesView(BaseView):
     def process(self):
         _body = self.parameters.get('body')
 
-        if abs(int(time.time()) - _body.get('timestamp')) > 900:
+        if abs(int(time.time()) - int(_body.get('timestamp'))) > 900:
             return {"result":'error',"resource":'Fuckoff,you are toooo late'}, 200
 
         if not (_body.get('resgroup') and _body.get('timestamp') and _body.get('sign')):
