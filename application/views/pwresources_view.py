@@ -1,5 +1,6 @@
 from .base_view import BaseView
 from application.services.pwresources_service import pwresourcesService
+from application.services.usergroup_service import UserGroupService
 from flask import request
 import hashlib,time
 import logging
@@ -14,6 +15,7 @@ each class is for one API
 class GetPwresourcesView(BaseView):
     def process(self):
         _body = self.parameters.get('body')
+        whmcsDict = {"fufei1":101,"fufei2":102,"fufei3":103}
 
         if abs(int(time.time()) - int(_body.get('timestamp'))) > 900:
             return {"result":'error',"resource":'Fuckoff,you are toooo late'}, 200
@@ -28,14 +30,19 @@ class GetPwresourcesView(BaseView):
 
         print ("sign True")
         if ( _body.get('resgroup')[0:5] == 'fufei'):
-            usergroup_id1 = int(_body.get('resgroup')[-1:])
-            usergroup_id2 = usergroup_id1+100
 
-            data1 = pwresourcesService.get_pwres_by_usergroupID(usergroup_id1)
-            data2 = pwresourcesService.get_pwres_by_usergroupID(usergroup_id2)
+            usergroup_id_whmcs = whmcsDict[_body.get('resgroup')]
+            usergroup_pony = UserGroupService.get_usergroup_by_name(_body.get('resgroup'))
+            print (usergroup_pony)
+            data_pony=[]
+            if usergroup_pony:
+                data_pony = pwresourcesService.get_pwres_by_usergroupID(usergroup_pony['id'])
+                print (data_pony)
 
-            dataall = data1+data2
+            data_whmcs = pwresourcesService.get_pwres_by_usergroupID(usergroup_id_whmcs)
 
+            dataall = data_pony+data_whmcs
+            print (len(dataall))
             return {"result":'success',"resgroup":_body.get('resgroup'),"resource":dataall}, 200
 
 

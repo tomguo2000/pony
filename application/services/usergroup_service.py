@@ -15,6 +15,11 @@ class UserGroupService(BaseService):
         return re if usergroup else None
 
     @staticmethod
+    def get_usergroup_by_name(group_name):
+        usergroup = UserGroupModel.query.filter(UserGroupModel.group_name == group_name).first()
+        return usergroup.__dict__ if usergroup else None
+
+    @staticmethod
     def get_usergroup_reality(usergroup_id):
         pwd_count = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id==usergroup_id).count()
         pwd_assigned = PWResourcesModel.query.filter(PWResourcesModel.usergroup_id==usergroup_id).filter(PWResourcesModel.user_id != None).count()
