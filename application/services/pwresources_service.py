@@ -11,5 +11,5 @@ class pwresourcesService(BaseService):
             user_id = row.user_id
             if user_id == None or user_id == 0:
                 user_id = ''
-            re.append([row.id,user_id,row.hashedpassword,row.quota,0,0])
+            re.append([row.id,str(user_id),row.hashedpassword,row.quota,0,0])
         return re if datalist else '[]'
