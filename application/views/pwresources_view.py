@@ -36,7 +36,7 @@ class GetPwresourcesView(BaseView):
 
             dataall = data1+data2
 
-            return {"result":'success',"resource":dataall}, 200
+            return {"result":'success',"resgroup":_body.get('resgroup'),"resource":dataall}, 200
 
 
 
